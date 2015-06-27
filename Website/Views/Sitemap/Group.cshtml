@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  @foreach (FileInfo file in Model) {
+    <url> 
+      <loc>http://@Request.Url.Host/groups/@ViewContext.RouteData.Values["id"]/permalink/@file.Name.Substring(file.Name.IndexOf("_")+1, file.Name.IndexOf(".")-file.Name.IndexOf("_")-1)</loc>
+      <lastmod>@file.LastWriteTimeUtc.ToString("O")</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.5</priority>
+    </url>
+  }
+</urlset>

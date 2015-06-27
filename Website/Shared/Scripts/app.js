@@ -1,0 +1,19 @@
+﻿(function () {
+  'use strict';
+
+  angular
+    .module('app', [
+      // Angular modules 
+
+      // Custom modules 
+
+      // 3rd Party Modules
+      'angularMoment'
+
+    ])
+
+    .config(function ($locationProvider) {
+      $locationProvider.html5Mode(true);
+    });
+
+})();

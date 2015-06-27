@@ -1,0 +1,27 @@
+﻿@{
+  Layout = "~/Views/_Layout.cshtml";
+}
+
+<h1>Skepti-Forum: Archive Posts</h1>
+
+<h1>Sync? @ViewBag.SyncOrAsync</h1>
+
+<div id="status"></div>
+
+<fb:login-button auto_logout_link="true" scope="user_groups" onlogin="checkLoginState();"></fb:login-button>
+
+<form method="post">
+  <br />
+  <button id="btnRetrieve" style="visibility:hidden">Retrieve</button>
+</form>
+
+<ul>
+  @foreach (var key in ViewData) {
+    <li>@key.Key: @key.Value</li>
+  }
+</ul>
+
+@section Scripts {
+  <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+  <script src="~/Shared/Scripts/Facebook.js"></script>
+}

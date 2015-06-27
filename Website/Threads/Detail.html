@@ -1,0 +1,86 @@
+﻿
+<article class="post {{vm.post.status_type}} {{vm.post.type}}">
+
+  <h1 property="headline" content="{{vm.post.to.data[0].name}}"><a ng-href="http://facebook/{{vm.post.to.data[0].id}}"><span ng-bind="vm.post.to.data[0].name" /></a></h1>
+
+  <div class="metadata">
+    <img ng-src="http://graph.facebook.com/v2.3/{{vm.post.from.id}}/picture?type=square&width=75&height=75" style="width: 75px; height: 75px;" class="avatar" />
+    <h3 property="author" typeof="Person"><a ng-href="http://facebook.com/{{vm.post.from.id}}" property="name" content="{{vm.post.from.name}}" ><span ng-bind="vm.post.from.name" /></a></h3>
+    <div class="metadata">
+      Posted <span am-time-ago="vm.post.created_time" property="datePublished" content="{{vm.post.created_time}}" />
+      <span class="likes" ng-if="vm.post.likes.length > 0"> | <span ng-bind="vm.post.likes.length" property="upvoteCount" /> like<span ng-show="vm.post.likes.length > 1">s</span></span>
+    </div>
+    <ul class="stats">
+      <li class="shares" ng-if="vm.post.shares > 0">Shares: <span ng-bind="vm.post.shares" /></li>
+      <li class="Likes" ng-if="vm.post.likes.length > 0">Likes: <span ng-bind="vm.post.likes.data.length" /></li>
+    </ul>
+  </div>
+
+  <div class="message">
+    <p ng-bind="vm.post.message" property="text"></p>
+  </div>
+
+  <section class="attachment" ng-if="vm.post.name" property="citation" typeof="CreativeWork">
+    <img ng-src="{{vm.post.picture}}" property="image" />
+    <h3 property="headline" content="{{vm.post.name}}"><a ng-href="{{vm.post.link}}"><span ng-bind="vm.post.name" /></a></h3>
+    <div ng-if="vm.post.description" class="description"><span ng-bind="vm.post.description" property="description" /></div>
+    <div ng-if="vm.post.caption" property="author" typeof="Organization">Source: <span ng-bind="vm.post.caption" property="name" /></div>
+    <div class="clearfix"></div>
+  </section>
+
+  <aside class="metadata">
+    This is an archive. The <a ng-href="http://facebook/{{vm.post.id}}">original post</a> can be found on the <a ng-href="http://facebook/{{vm.post.to.data[0].id}}" property="isBasedOnUrl discussionUrl"><span ng-bind="vm.post.to.data[0].name" /></a>. 
+    For more information on the Skepti-Forum Project, visit our website at <a href="http://skeptiforum.org">skeptiforum.org</a>.
+  </aside>
+
+  <!--
+  <section class="metadata">
+    <h3>Metadata</h3>
+    <ul>
+      <li ng-show="vm.post.status_type">Status Type: <span ng-bind="vm.post.status_type" /></li>
+      <li ng-show="vm.post.type">Type: <span ng-bind="vm.post.type" /></li>
+      <li ng-show="vm.post.is_expired">Expired? <span ng-bind="vm.post.is_expired" /></li>
+      <li ng-show="vm.post.source">Source: <span ng-bind="vm.post.source" /></li>
+      <li ng-show="vm.post.object_id">ObjectID <span ng-bind="vm.post.object_id" /></li>
+      <li ng-show="vm.post.story">Story: <span ng-bind="vm.post.story" /></li>
+    </ul>
+  </section>
+  -->
+
+</article>
+
+<section class="comments" property="answerCount commentCount" content="{{vm.post.comments.length}}">
+
+  <h3>Comments</h3>
+
+  <form>
+    <label><input type="checkbox" ng-model="vm.authorOnly" ng-change="vm.toggleAuthor()"> Only show author's comments.</label>
+    <br />
+    <label><input type="checkbox" ng-model="vm.likedOnly"> Only show comments with at least two likes.</label>
+  </form>
+
+  <article ng-repeat="comment in vm.post.comments.data | filter:vm.search | filter:vm.likedFilter" class="comment" ng-class="{'is-author': vm.post.from.id == comment.from.id}" property="comment" vocab="http://schema.org/" typeof="Answer">
+
+    <img ng-src="http://graph.facebook.com/v2.3/{{comment.from.id}}/picture?type=square" class="avatar" />
+
+    <h4 ng-class="{'is-author': vm.post.from.id == comment.from.id}" property="author" typeof="Person"><a ng-href="http://facebook.com/{{comment.from.id}}" property="name" content="{{comment.from.name}}"><span ng-bind="comment.from.name" /></a></h4>
+
+    <div class="metadata">
+      Posted <span am-time-ago="comment.created_time" class="date" property="dateCreated" content="{{comment.created_time}}" />
+      <span class="likes" ng-if="comment.like_count > 0"> | <span ng-bind="comment.like_count" property="upvoteCount" /> like<span ng-show="comment.like_count > 1">s</span></span>
+    </div>
+
+    <div ng-bind="comment.message" class="message" property="text" />
+
+    <div class="attachment {{comment.attachment.type}}" ng-if="comment.attachment.title" property="citation" typeof="CreativeWork">
+      <img ng-src="{{comment.attachment.media.image.src}}" width="{{comment.attachment.media.image.width}}" height="{{comment.attachment.media.image.height}}" property="image" />
+      <h5 property="headline" content="{{comment.attachment.title}}"><a ng-href="{{comment.attachment.url}}" ng-bind="comment.attachment.title" /></h5>
+      <div class="description"><span ng-bind="comment.attachment.description" property="description" /></div>
+      <div class="clearfix"></div>
+    </div>
+
+  </article>
+
+</section>
+
+<!-- "message_tags,story_tags" -->

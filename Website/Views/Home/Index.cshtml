@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<main>
+
+  <div class="message abstract">
+    The <a href="http://skeptiforum.org/">Skepti-Forum project</a> provides civil, evidence-based discussions about important science-related topics. Our most active communities are on <a href="https://www.facebook.com/groups/SkeptiForum/">Facebook</a>; this site provides an archive of public discussions that have taken place there.
+  </div>
+
+  <script>
+  (function() {
+    var cx = '001242793625997283140:-0mmfx-dzby';
+    var gcse = document.createElement('script');
+    gcse.type = 'text/javascript';
+    gcse.async = true;
+    gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+        '//cse.google.com/cse.js?cx=' + cx;
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(gcse, s);
+  })();
+  </script>
+  <section class="search-results">
+    <gcse:search></gcse:search>
+  </section>
+
+</main>
+
