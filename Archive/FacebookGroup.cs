@@ -53,7 +53,7 @@ namespace SkeptiForum.Archive {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Initializes a new instance of the <see cref="FacebookGroup"/> class based on the response from the <see 
-    ///   cref="FacebookClient.Get(string)"/> operation (such as that utilized by he <see 
+    ///   cref="FacebookClient.Get(string)"/> operation (such as that utilized by the <see 
     ///   cref="FacebookGroupCollection.LoadGroups(bool?, string)"/> method). 
     /// </summary>
     /// <param name="group">
