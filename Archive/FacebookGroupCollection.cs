@@ -182,6 +182,14 @@ namespace SkeptiForum.Archive {
 
     }
 
+    /*==========================================================================================================================
+    | METHOD: GET KEY FOR ITEM
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Sets the <see cref="FacebookGroup.Id"/> property as the key for the <see cref="FacebookGroupCollection" /> class.
+    /// </summary>
+    /// <param name="item">A reference to the item in the collection that the key will be retrieved from.</param>
+    /// <returns>The key to use for the collection.</returns>
     protected override long GetKeyForItem(FacebookGroup item) {
       return item.Id;
     }
