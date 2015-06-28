@@ -52,6 +52,7 @@
     <Compile Include="Facebook.cs" />
     <Compile Include="FacebookGroup.cs" />
     <Compile Include="FacebookGroupCollection.cs" />
+    <Compile Include="FacebookPost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

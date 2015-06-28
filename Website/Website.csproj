@@ -91,7 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
-    <Content Include="Groups\Index.html" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-aria.js" />
@@ -885,11 +884,9 @@
     <Content Include="Shared\Scripts\app.js" />
     <Content Include="Shared\Scripts\app.routes.js" />
     <Content Include="Shared\Scripts\Facebook.js" />
-    <Content Include="Shared\Scripts\Details.js" />
     <Content Include="Shared\Styles\Styles.css" />
     <Content Include="Threads\Detail.html" />
     <Content Include="Threads\Detail.html.js" />
-    <Content Include="Threads\Index.html" />
     <Content Include="Web.config" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
   </ItemGroup>

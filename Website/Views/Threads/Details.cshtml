@@ -1,25 +1,24 @@
 ﻿@{
   Layout = "~/Views/_Layout.cshtml";
-  ViewBag.Title = Model.to.data[0].name + " thread by " + Model.from.name + " (" + ViewData["CreateDate"] + ")";
+  ViewBag.Title = Model.Title;
 }
 
 @section Head {
-  <meta property="og:title" content="@ViewBag.Title" />
-  <meta property="og:description" content="@ViewData["Description"]" />
+  <meta property="og:title" content="@Model.Title" />
+  <meta property="og:description" content="@Model.Message" />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="http://facebook/@Model.to.data[0].id" />
-  <meta property="og:image" content="@Model.picture" />  
+  <meta property="og:image" content="@Model.Json.picture" />  
   <meta property="og:site_name" content="Skepti-Forum Archive" />
   <!-- 
     <PageMap>
       <DataObject type="thread">
-        <Attribute name="forum">@Model.to.data[0].name</Attribute>
-        <Attribute name="date">@Model.created_time.ToString("o")</Attribute>
-        <Attribute name="author">@Model.from.name</Attribute>
-        <Attribute name="comments">@ViewData["CommentCount"]</Attribute>
-        <Attribute name="likes">@ViewData["LikeCount"]</Attribute>
-        <Attribute name="statusType">@Model.status_type</Attribute>
-        <Attribute name="type">@Model.type</Attribute>
+        <Attribute name="forum">@Model.Group.Name</Attribute>
+        <Attribute name="date">@Model.CreateDate.ToString("o")</Attribute>
+        <Attribute name="author">@Model.Author</Attribute>
+        <Attribute name="comments">@Model.CommentCount</Attribute>
+        <Attribute name="likes">@Model.LikeCount</Attribute>
+        <Attribute name="statusType">@Model.Json.status_type</Attribute>
+        <Attribute name="type">@Model.Json.type</Attribute>
       </DataObject>
     </PageMap>    
     -->

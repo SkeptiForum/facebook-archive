@@ -62,40 +62,12 @@ namespace SkeptiForum.Archive.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide preprocessing of variables required by the view
       \-----------------------------------------------------------------------------------------------------------------------*/
-
-      //Create Data
-      ViewData["CreateDate"] = DateTime.Parse(json.created_time.ToString()).ToString("yyyy-MM-dd");
-
-      //Comment Count
-      if (json.comments == null || json.comments.data == null) {
-        ViewData["CommentCount"] = 0;
-      }
-      else {
-        ViewData["CommentCount"] = json.comments.data.Count;
-      }
-
-      //Like Count
-      if (json.likes == null || json.likes.data == null) {
-        ViewData["LikeCount"] = 0;
-      }
-      else {
-        ViewData["LikeCount"] = json.likes.data.Count;
-      }
-
-      //Truncated Description
-      var description = "";
-      if (json.message != null) {
-        description = json.message.ToString().Replace("\n", " ");
-        if (description.Length > 150) {
-          description = description.Substring(0, description.LastIndexOf(' ', 150)) + "...";
-        }
-      }
-      ViewData["Description"] = description;
+      FacebookPost post = new FacebookPost(json);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return data to view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return View(json);
+      return View(post);
 
     }
 
