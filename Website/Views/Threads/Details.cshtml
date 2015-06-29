@@ -1,6 +1,7 @@
 ﻿@{
   Layout = "~/Views/_Layout.cshtml";
   ViewBag.Title = Model.Title;
+  ViewBag.Schema = "QAPage";
 }
 
 @section Head {
@@ -27,7 +28,7 @@
 
 <base href="/Groups">
 
-<main ng-app="app" ng-include="'/Threads/Detail.html'" ng-controller="ThreadDetailController as vm" ng-show="vm.post" vocab="http://schema.org/" typeof="QAPage"></main>
+<main ng-app="app" ng-include="'/Threads/Detail.html'" ng-controller="ThreadDetailController as vm" ng-show="vm.post" typeof="Question"></main>
 
 @section Scripts {
   <script src="~/Scripts/jquery-2.1.4.min.js"></script>

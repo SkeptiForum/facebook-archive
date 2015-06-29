@@ -1,11 +1,11 @@
 ﻿
-<article class="post {{vm.post.status_type}} {{vm.post.type}}" typeof="Question">
+<article class="post {{vm.post.status_type}} {{vm.post.type}}">
 
   <h1 property="headline" content="{{vm.post.to.data[0].name}}"><a ng-href="http://facebook/{{vm.post.to.data[0].id}}"><span ng-bind="vm.post.to.data[0].name" /></a></h1>
 
   <div class="metadata">
     <img ng-src="http://graph.facebook.com/v2.3/{{vm.post.from.id}}/picture?type=square&width=75&height=75" style="width: 75px; height: 75px;" class="avatar" />
-    <h3 property="author" typeof="Person"><a ng-href="http://facebook.com/{{vm.post.from.id}}" property="name" content="{{vm.post.from.name}}" ><span ng-bind="vm.post.from.name" /></a></h3>
+    <h3 property="author" typeof="Person"><a ng-href="http://facebook.com/{{vm.post.from.id}}" property="url"><span ng-bind="vm.post.from.name" property="name" /></a></h3>
     <div class="metadata">
       Posted <span am-time-ago="vm.post.created_time" property="datePublished" content="{{vm.post.created_time}}" />
       <span class="likes" ng-if="vm.post.likes.data.length > 0"> | <span ng-bind="vm.post.likes.data.length" property="upvoteCount" /> like<span ng-show="vm.post.likes.data.length > 1">s</span></span>
@@ -30,7 +30,7 @@
   </section>
 
   <aside class="metadata">
-    This is an archive. The <a ng-href="http://facebook/{{vm.post.id}}">original post</a> can be found on the <a ng-href="http://www.facebook.com/{{vm.post.to.data[0].id}}" property="isBasedOnUrl discussionUrl" content="http://www.facebook.com/{{vm.post.to.data[0].id}}"><span ng-bind="vm.post.to.data[0].name" /></a>. 
+    This is an archive. The <a ng-href="http://facebook/{{vm.post.id}}">original post</a> can be found on the <a ng-href="http://www.facebook.com/{{vm.post.to.data[0].id}}" property="isBasedOnUrl discussionUrl"><span ng-bind="vm.post.to.data[0].name" /></a>. 
     For more information on the Skepti-Forum Project, visit our website at <a href="http://skeptiforum.org">skeptiforum.org</a>.
   </aside>
 
@@ -64,7 +64,7 @@
 
     <img ng-src="http://graph.facebook.com/v2.3/{{comment.from.id}}/picture?type=square" class="avatar" />
 
-    <h4 ng-class="{'is-author': vm.post.from.id == comment.from.id}" property="author" typeof="Person"><a ng-href="http://facebook.com/{{comment.from.id}}" property="name" content="{{comment.from.name}}"><span ng-bind="comment.from.name" /></a></h4>
+    <h4 ng-class="{'is-author': vm.post.from.id == comment.from.id}" property="author" typeof="Person"><a ng-href="http://facebook.com/{{comment.from.id}}" property="url"><span ng-bind="comment.from.name" property="name" /></a></h4>
 
     <div class="metadata">
       Posted <span am-time-ago="comment.created_time" class="date" property="dateCreated" content="{{comment.created_time}}" />

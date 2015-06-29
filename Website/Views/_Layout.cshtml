@@ -7,7 +7,7 @@
     <link href="~/Shared/Styles/Styles.css" rel="stylesheet" />
     @RenderSection("Head", false)
   </head>
-  <body>
+  <body vocab="http://schema.org/" typeof="@(ViewBag.Schema?? "WebPage")">
 
     <header class="title">
       Skepti-Forum Archive
