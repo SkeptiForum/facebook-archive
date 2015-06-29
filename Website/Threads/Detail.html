@@ -1,5 +1,5 @@
 ﻿
-<article class="post {{vm.post.status_type}} {{vm.post.type}}">
+<article class="post {{vm.post.status_type}} {{vm.post.type}}" typeof="Question">
 
   <h1 property="headline" content="{{vm.post.to.data[0].name}}"><a ng-href="http://facebook/{{vm.post.to.data[0].id}}"><span ng-bind="vm.post.to.data[0].name" /></a></h1>
 
@@ -13,6 +13,7 @@
     <ul class="stats">
       <li class="shares" ng-if="vm.post.shares > 0">Shares: <span ng-bind="vm.post.shares" /></li>
       <li class="Likes" ng-if="vm.post.likes.data.length > 0">Likes: <span ng-bind="vm.post.likes.data.length" /></li>
+      <li class="Comment" ng-if="vm.post.comments.data.length > 0">Comments: <span ng-bind="vm.post.comments.data.length" property="answerCount commentCount" /></li>
     </ul>
   </div>
 
@@ -49,7 +50,7 @@
 
 </article>
 
-<section class="comments" property="answerCount commentCount" content="{{vm.post.comments.data.length}}">
+<section class="comments">
 
   <h3>Comments</h3>
 
