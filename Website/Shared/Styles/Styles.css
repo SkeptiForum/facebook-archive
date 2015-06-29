@@ -65,6 +65,10 @@ a {
   margin: 3px 0px;
 }
 
+.stats {
+  display: none;
+}
+
 .message {
   margin-left: 70px;
   width: 500px;
