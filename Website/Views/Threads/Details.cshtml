@@ -5,7 +5,7 @@
 
 @section Head {
   <meta property="og:title" content="@Model.Title" />
-  <meta property="og:description" content="@Model.Message" />
+  <meta property="og:description" content="@Model.TruncateMessage(150)" />
   <meta property="og:type" content="article" />
   <meta property="og:image" content="@Model.Json.picture" />  
   <meta property="og:site_name" content="Skepti-Forum Archive" />
