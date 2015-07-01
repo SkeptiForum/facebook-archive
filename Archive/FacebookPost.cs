@@ -186,7 +186,9 @@ namespace SkeptiForum.Archive {
     public string TruncateMessage(int length = 150) {
       var message = Message.Replace("\n", " ");
       if (message.Length > length) {
-        message = message.Substring(0, message.LastIndexOf(' ', length)) + "...";
+        var truncateAt = message.LastIndexOf(' ', length);
+        if (truncateAt < 0) truncateAt = length; 
+        message = message.Substring(0, truncateAt) + "...";
       }
       return message;
     }
