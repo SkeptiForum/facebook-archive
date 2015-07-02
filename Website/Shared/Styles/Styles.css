@@ -32,8 +32,12 @@ aside.metadata {
 header.title {
   margin: 0px;
   padding: 10px;
-  font-size: 1rem;
   background-color: #404040;
+  font-size: 1rem;
+  color: #ebebeb;
+}
+
+header.title a {
   color: #ebebeb;
 }
 
