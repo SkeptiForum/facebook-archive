@@ -74,9 +74,9 @@
     * 
     * @param {object=} comment The instant of the comment being evaluated by the repeater.
     */
-    var likedFilter = function (comment) {
+    function likedFilter(comment) {
       return !vm.likedOnly || (comment.like_count && comment.like_count > 1);
-    };
+    }
 
   /*============================================================================================================================
   | METHOD: TOGGLE AUTHOR
@@ -89,7 +89,7 @@
     * 
     * @param {object=} comment The instant of the comment being evaluated by the repeater.
     */
-    var toggleAuthor = function () {
+    function toggleAuthor() {
       vm.search.from.id = vm.authorOnly ? vm.post.from.id : '';
     }
 
