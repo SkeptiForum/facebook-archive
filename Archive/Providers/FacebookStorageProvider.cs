@@ -50,9 +50,9 @@ namespace SkeptiForum.Archive.Providers {
     /// <summary>
     ///   
     /// </summary>
-    public async override void SetGroupsAsync(FacebookGroupCollection groups) {
+    public async override Task SetGroupsAsync(FacebookGroupCollection groups) {
       var groupConfigPath = HttpContext.Current.Server.MapPath(ArchiveManager.Configuration.StorageDirectory + "/Groups.json");
-      byte[] encodedText = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(groups));
+      byte[] encodedText = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(groups));
 
       using (FileStream sourceStream = new FileStream(
         groupConfigPath,
