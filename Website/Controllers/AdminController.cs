@@ -42,7 +42,7 @@ namespace SkeptiForum.Archive.Web.Controllers {
     /// </summary>
     /// <returns>The download view.</returns>
     public async Task<ActionResult> Download() {
-      return View();
+      return View(ArchiveManager.Groups);
     }
 
     /*==========================================================================================================================

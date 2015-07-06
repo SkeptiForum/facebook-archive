@@ -2,24 +2,46 @@
   Layout = "~/Views/_Layout.cshtml";
 }
 
-<h1>Skepti-Forum: Archive Posts</h1>
+<main>
+  <h1>Skepti-Forum: Archive Posts</h1>
 
-<h1>Sync? @ViewBag.SyncOrAsync</h1>
+  <div id="status"></div>
 
-<div id="status"></div>
+  <fb:login-button auto_logout_link="true" scope="user_groups" onlogin="checkLoginState();"></fb:login-button>
 
-<fb:login-button auto_logout_link="true" scope="user_groups" onlogin="checkLoginState();"></fb:login-button>
+  <table>
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>Public?</td>
+        <td>Last Archived</td>
+        <td>Post Count</td>
+        <td>Refresh?</td>
+      </tr>
+    </thead>
+    @foreach (var group in Model) {
+      <tr>
+        <td>@group.Name</td>
+        <td>@group.IsPublic</td>
+        <td>@group.LastArchived.ToString("MMM d, yyyy")</td>
+        <td>@group.PostCount.ToString("#,###")</td>
+        <td>[Refresh]</td>
+      </tr>
+    }
+  </table>
 
-<form method="post">
-  <br />
-  <button id="btnRetrieve" style="visibility:hidden">Retrieve</button>
-</form>
+  <form method="post">
+    <br />
+    <button id="btnRetrieve" style="visibility:hidden">Download All Posts</button>
+  </form>
 
-<ul>
-  @foreach (var key in ViewData) {
-    <li>@key.Key: @key.Value</li>
-  }
-</ul>
+  <ul>
+    @foreach (var key in ViewData) {
+      <li>@key.Key: @key.Value</li>
+    }
+  </ul>
+
+</main>
 
 @section Scripts {
   <script src="~/Scripts/jquery-2.1.4.min.js"></script>
