@@ -33,8 +33,7 @@ namespace SkeptiForum.Archive.Providers {
     /// <summary>
     ///   
     /// </summary>
-    /// <returns>True, assuming the process succeeded.</returns>
-    public abstract void SetGroups(FacebookGroupCollection groups);
+    public abstract void SetGroupsAsync(FacebookGroupCollection groups);
 
     /*==========================================================================================================================
     | METHOD: GET POSTS
