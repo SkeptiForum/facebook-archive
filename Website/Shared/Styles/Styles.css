@@ -137,3 +137,12 @@ img.avatar {
 .comment.is-author {
   border-left: 4px solid #cbd6db;
 }
+
+table {
+  width: 80%;
+  margin-top: 15px;
+}
+
+thead {
+  font-style: italic;
+}
