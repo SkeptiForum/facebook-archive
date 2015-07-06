@@ -73,7 +73,27 @@ namespace SkeptiForum.Archive.Providers {
     ///   
     /// </summary>
     public async override Task<dynamic> GetPostAsync(long groupId, long postId) {
-      return await ArchiveManager.StorageProvider.GetPostAsync(groupId, postId);
+      var postPath = ArchiveManager.Configuration.StorageDirectory + "/" + groupId + "/" + groupId + "_" + postId;
+      var postMappedPath = HttpContext.Current.Server.MapPath(postPath);
+      var output = new StringBuilder();
+      using (
+        FileStream sourceStream = new FileStream(
+          postMappedPath,
+          FileMode.Open,
+          FileAccess.Read,
+          FileShare.Read,
+          bufferSize: 4096,
+          useAsync: true
+        )
+      ) {
+        byte[] buffer = new byte[0x1000];
+        int numRead;
+        while ((numRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) != 0) {
+          string text = Encoding.Unicode.GetString(buffer, 0, numRead);
+          output.Append(text);
+        }
+      }
+      return output.ToString();
     }
 
     /*==========================================================================================================================
@@ -83,7 +103,11 @@ namespace SkeptiForum.Archive.Providers {
     ///   
     /// </summary>
     public async override Task<List<FileInfo>> GetPostsAsync(long groupId) {
-      return await ArchiveManager.StorageProvider.GetPostsAsync(groupId);
+      var postPath = ArchiveManager.Configuration.StorageDirectory + "/" + groupId + "/";
+      var postMappedPath = HttpContext.Current.Server.MapPath(postPath);
+      var directory = new DirectoryInfo(postMappedPath);
+      var files = directory.GetFiles("*.json");
+      return files.ToList<FileInfo>();
     }
 
     /*==========================================================================================================================
@@ -93,7 +117,7 @@ namespace SkeptiForum.Archive.Providers {
     ///   
     /// </summary>
     public async override Task<dynamic> SetPostAsync(dynamic json) {
-      return await ArchiveManager.StorageProvider.SetPostAsync(json);
+      throw new NotImplementedException();
     }
 
   } //Class
