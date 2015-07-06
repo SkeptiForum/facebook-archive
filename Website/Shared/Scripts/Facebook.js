@@ -102,7 +102,7 @@
     console.log("Access Token: " + accessToken)
 
     if (!fbat) {
-      $.post('/Archive/Authorize',
+      $.post('/Admin/Authorize',
       { 'accessToken': accessToken },
       function (data, statusText) {
         var status = data.status;

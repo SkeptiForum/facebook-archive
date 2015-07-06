@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B396F3E6-54A9-4003-BDE1-397DBDEC5FA0}</ProjectGuid>
+    <ProjectGuid>{F3BE4089-6C48-4319-B258-92BE84620255}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SkeptiForum.Archive</RootNamespace>
-    <AssemblyName>Archive</AssemblyName>
+    <AssemblyName>ArchiveSite</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -35,11 +35,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1-beta3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,11 +50,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants.cs" />
-    <Compile Include="Facebook.cs" />
+    <Compile Include="Configuration\GroupQueryElement.cs" />
+    <Compile Include="Configuration\QueriesElement.cs" />
+    <Compile Include="Configuration\QueryElement.cs" />
+    <Compile Include="Configuration\ApiElement.cs" />
+    <Compile Include="Configuration\ArchiveSection.cs" />
+    <Compile Include="ArchiveManager.cs" />
     <Compile Include="FacebookGroup.cs" />
     <Compile Include="FacebookGroupCollection.cs" />
     <Compile Include="FacebookPost.cs" />
+    <Compile Include="Providers\ArchiveDataProviderBase.cs" />
+    <Compile Include="Providers\ArchiveStorageProviderBase.cs" />
+    <Compile Include="Providers\FacebookDataProvider.cs" />
+    <Compile Include="Providers\FacebookStorageProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

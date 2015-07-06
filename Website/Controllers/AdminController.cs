@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using IO = System.IO;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using SkeptiForum.Archive; 
 
 namespace SkeptiForum.Archive.Web.Controllers {
 
@@ -60,22 +61,9 @@ namespace SkeptiForum.Archive.Web.Controllers {
     public async Task<ActionResult> Download(FormCollection collection) {
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var client                = Facebook.Client;
-      var accessToken           = Request.Cookies["fbat"].Value;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Set the access token via the cookie, if not already set
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(client.AccessToken)) {
-        client.AccessToken = accessToken;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Validate the access token
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (String.IsNullOrEmpty(client.AccessToken)) {
+      if (String.IsNullOrEmpty(ArchiveManager.Configuration.Api.Token)) {
         throw new ArgumentException(
           "This method assumes the presence of a cookie with the key 'fbak', representing the long-lived Facebook access token."
           + "This cookie is set by the /Admin/Authorize/ endpoint, which accepts temporary access token returned by the Facebook"
@@ -86,12 +74,12 @@ namespace SkeptiForum.Archive.Web.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Retrieve all posts associated with the groups
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var groups = await Facebook.Groups.GetPostsAsync();
+      var groupPosts = await ArchiveManager.Groups.GetPostsAsync();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide debug data regarding the number of posts
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (Collection<dynamic> group in groups) {
+      foreach (Collection<dynamic> group in groupPosts) {
         foreach (dynamic post in group) {
           var directoryPath = Server.MapPath("~/Archives/" + post.to.data[0].id + "/");
           var filePath = directoryPath + "\\" + post.id + ".json";
@@ -130,19 +118,17 @@ namespace SkeptiForum.Archive.Web.Controllers {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set default expiration
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var expiry = 20*60*60;
+      long expiry = 20*60*60;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Exchange temporary token for long-lived token
       \-----------------------------------------------------------------------------------------------------------------------*/
-      accessToken = Facebook.GetLongLivedToken(accessToken, out expiry);
+      accessToken = ArchiveManager.DataProvider.GetLongLivedToken(accessToken, out expiry);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set token to cookie
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var cookie = new HttpCookie("fbat", accessToken);
-      cookie.Expires = DateTime.Now.AddSeconds(expiry);
-      Response.Cookies.Add(cookie);
+      ArchiveManager.Configuration.Api.SetToken(accessToken, expiry);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return results

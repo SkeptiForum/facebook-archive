@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Facebook;
+using Newtonsoft.Json;
 
 namespace SkeptiForum.Archive {
 
@@ -24,48 +25,14 @@ namespace SkeptiForum.Archive {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private     string          _filter          = "Skepti-Forum";
-    private     bool            _publicOnly      = true;
-    private     string          _fields          = "id,name,privacy";
-    private     int             _limit           = 750;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Initializes a new instance of the `FacebookGroupCollection` class. Will automatically load groups from the Facebook
-    ///   Graph API using the <see cref="LoadGroups(bool?, string)" /> method. 
+    ///   Initializes a new instance of the `FacebookGroupCollection` class. 
     /// </summary>
-    /// <param name="publicOnly">
-    ///   Determines if only public groups should be listed. Set to false to load closed and private groups; be aware that this 
-    ///   may introduce potential privacy concerns if also loading posts. Defaults to true.
-    /// </param>
-    /// <param name="filter">
-    ///   Sets the filter to use in evaluating whether or not to include a group in the collection. Defaults to "Skepti-Forum",
-    ///   meaning all groups containing the words "Skepti-Forum" will be included. This is intended to exclude groups not 
-    ///   affiliated with the Skepti-Forum project.
-    /// </param>
-    public FacebookGroupCollection(bool publicOnly = true, string filter = "Skepti-Forum") : base() {
-      _publicOnly = publicOnly;
-      _filter = filter;
-      LoadGroups();
-    }
-
-    /*==========================================================================================================================
-    | PROPERTY: PUBLIC ONLY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Determines if only public groups should be listed. The property is read only, and can only be set via the constructor.
-    /// </summary>
-    public bool PublicOnly {
-      get {
-        return _publicOnly;
-      }
-    }
-    public string Filter {
-      get {
-        return _filter;
-      }
+    public FacebookGroupCollection() : base() {
     }
 
     /*==========================================================================================================================
@@ -102,43 +69,14 @@ namespace SkeptiForum.Archive {
     }
 
     /*==========================================================================================================================
-    | METHOD: LOAD GROUPS
+    | FACTORY METHOD: CREATE FROM STORAGE PROVIDER (ASYNCHRONOUS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Populates the collection with a list of <see cref="SkeptiForum.Archive.FacebookGroup"/> objects based on a query to the 
-    ///   Facebook API.
+    ///   
     /// </summary>
-    /// <param name="publicOnly">
-    ///   Determines if only public groups should be listed. Set to false to load closed and private groups; be aware that this 
-    ///   may introduce potential privacy concerns if also loading posts. Optionally overrides the value set for the collection.
-    /// </param>
-    /// <param name="filter">
-    ///   Sets the filter to use in evaluating whether or not to include a group in the collection. This is intended to exclude 
-    ///   groups not affiliated with the Skepti-Forum project. Optionally overrides the value set for the collection.
-    /// </param>
-    public void LoadGroups(bool? publicOnly = null, string filter = "Skepti-Forum") {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish defaults
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      publicOnly                = publicOnly ?? _publicOnly;
-      filter                    = filter ?? _filter;
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var client                = Facebook.Client;
-      dynamic groups            = client.Get("me/groups?limit=" + _limit + "&fields=" + _fields);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through each group and add it to the collection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (dynamic group in groups.data) {
-        if (!String.IsNullOrEmpty(filter) && !group.name.Contains(Filter)) continue;
-        if (publicOnly == true && !group.privacy.Equals("open", StringComparison.InvariantCultureIgnoreCase)) continue;
-        FacebookGroup facebookGroup = new FacebookGroup(group);
-        this.Add(facebookGroup);
-      }
+    /// <returns></returns>
+    public static async Task<FacebookGroupCollection> CreateFromStorageProvider() {
+      return await ArchiveManager.StorageProvider.GetGroupsAsync();
     }
 
     /*==========================================================================================================================
@@ -160,9 +98,7 @@ namespace SkeptiForum.Archive {
       | For each group, begin querying Facebook
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (FacebookGroup group in this) {
-        taskRunner.Add(group.GetPostsAsync());
-      //Collection<dynamic> postCollection = await group.GetPostsAsync();
-      //postsCollection.Add(postCollection);
+        taskRunner.Add(ArchiveManager.DataProvider.GetPostsAsync(group.Id));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
