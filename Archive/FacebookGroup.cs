@@ -26,6 +26,9 @@ namespace SkeptiForum.Archive {
     private long        _id;
     private string      _key;
     private string      _name;
+    private int         _postCount = -1;
+    private bool        _isPublic = false;
+    private DateTime    _lastArchived = DateTime.MinValue;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -100,6 +103,56 @@ namespace SkeptiForum.Archive {
       }
       set {
         _name = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: IS PUBLIC?
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets whether or not the group is public; this should be set to false if the group is "Closed" or "Secret".
+    /// </summary>
+    public bool IsPublic {
+      get {
+        return _isPublic;
+      }
+      set {
+        _isPublic = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: POST COUNT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the number of posts associated with the current group. The count is based on the number of JSON files 
+    ///   located in the associated storage location for the group. The value may be reset manually, e.g., after downloading 
+    ///   files.
+    /// </summary>
+    public int PostCount {
+      get {
+        if (_postCount < 0) {
+          _postCount = ArchiveManager.StorageProvider.GetPostsAsync(Id).Result.Count;
+        }
+        return _postCount;
+      }
+      set {
+        _postCount = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: LAST ARCHIVED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the time that the group was previously archived.
+    /// </summary>
+    public DateTime LastArchived {
+      get {
+        return _lastArchived;
+      }
+      set {
+        _lastArchived = value;
       }
     }
 
