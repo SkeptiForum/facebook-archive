@@ -150,3 +150,20 @@ thead {
 tr.inactive {
   color: #808080;
 }
+
+button.processing {
+  color: #0094ff;
+}
+
+button.error {
+  color: #ff0000;
+}
+
+button.updated {
+  color: #08be6f;
+}
+
+.old {
+  background-color: #cf1919;
+  color: white;
+}

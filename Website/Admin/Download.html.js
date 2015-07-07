@@ -138,7 +138,8 @@
     * @name  app:DownloadController#collateData
     * @kind  function
     * @description Collates data from the Facebook Graph API's /groups edge and the local Web API's /groups endpoint into a 
-    * single list that includes both data from the server as well as the user's own permissions.
+    * single list that includes both data from the server as well as the user's own permissions. Additionally, set a new 'isOld'
+    * property determining whether or not the group has been archived within the last two weeks.
     */
     function collateData() {
       if (!vm.siteGroups || !vm.userGroups) return;
@@ -148,6 +149,7 @@
             siteGroup.isMemberOf = true;
           }
         });
+        siteGroup.isOld = moment(siteGroup.LastArchived).diff(Date.now(), 'days') < -14;
       });
     }
 
@@ -166,6 +168,11 @@
         delete group.Processing;
         group.LastArchived = data.LastArchived;
         group.PostCount = data.PostCount;
+        group.Updated = true;
+        group.isOld = false;
+      }).
+      error(function (data, statusText) {
+        group.Error = true;
       });
 
     }
