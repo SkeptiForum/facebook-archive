@@ -33,7 +33,15 @@ namespace SkeptiForum.Archive.Providers {
     /// <summary>
     ///   
     /// </summary>
-    public abstract Task SetGroupsAsync(FacebookGroupCollection groups);
+    public abstract Task SetGroupsAsync();
+
+    /*==========================================================================================================================
+    | METHOD: POST EXISTS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   
+    /// </summary>
+    public abstract Task<bool> PostExistsAsync(long groupId, long postId);
 
     /*==========================================================================================================================
     | METHOD: GET POSTS
@@ -79,7 +87,7 @@ namespace SkeptiForum.Archive.Providers {
     /// <summary>
     ///   
     /// </summary>
-    public abstract Task<dynamic> SetPostAsync(dynamic json);
+    public abstract Task SetPostAsync(dynamic json);
 
   }
 
