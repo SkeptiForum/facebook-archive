@@ -22,6 +22,7 @@
     .config(function ($locationProvider, $facebookProvider) {
       //$locationProvider.html5Mode(true);
       $facebookProvider.setAppId('1648003478762169');
+      $facebookProvider.setPermissions("user_groups");
     })
 
     .run(function ($rootScope) {
