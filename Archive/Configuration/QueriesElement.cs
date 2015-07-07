@@ -15,14 +15,24 @@ namespace SkeptiForum.Archive.Configuration {
   /*============================================================================================================================
   | CLASS: QUERIES ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides an element for configuring defaults for queries to the <see 
+  ///   cref="SkeptiForum.Archive.Providers.ArchiveDataProviderBase"/> via <see cref="QueryElement"/> properties. 
+  /// </summary>
   public class QueriesElement : ConfigurationElement {
 
     /*==========================================================================================================================
     | PROPERTY: GROUPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   
+    ///   Provides configuration access to the <see cref="SkeptiForum.Archive.Providers.ArchiveStorageProviderBase"/> for 
+    ///   querying groups information. 
     /// </summary>
+    /// <remarks>
+    ///   This element includes configuration for fields and limits, as well as group-specific properties such as whether 
+    ///   or not to include non-public groups in the query results.
+    /// </remarks>
+    /// 
     [ConfigurationProperty("groups", IsRequired = false)]
     public GroupQueryElement Groups {
       get {
@@ -37,7 +47,8 @@ namespace SkeptiForum.Archive.Configuration {
     | PROPERTY: POSTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   
+    ///   Provides configuration access to the <see cref="SkeptiForum.Archive.Providers.ArchiveStorageProviderBase"/> for 
+    ///   querying posts information. 
     /// </summary>
     [ConfigurationProperty("posts", IsRequired = false)]
     public QueryElement Posts {
@@ -53,7 +64,8 @@ namespace SkeptiForum.Archive.Configuration {
     | PROPERTY: COMMENTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   
+    ///   Provides configuration access to the <see cref="SkeptiForum.Archive.Providers.ArchiveStorageProviderBase"/> for 
+    ///   querying comments information. 
     /// </summary>
     [ConfigurationProperty("comments", IsRequired = false)]
     public QueryElement Comments {
