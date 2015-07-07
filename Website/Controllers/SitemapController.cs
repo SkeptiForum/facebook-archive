@@ -4,6 +4,8 @@
 | Project       Forum Archive
 \=============================================================================================================================*/
 using System.Web.Mvc;
+using SkeptiForum.Archive;
+using System.Threading.Tasks;
 
 namespace SkeptiForum.Archive.Controllers {
 
@@ -23,10 +25,8 @@ namespace SkeptiForum.Archive.Controllers {
     /// </summary>
     /// <returns>An index of sitemaps.</returns>
     public ActionResult Index() {
-      var directory = new System.IO.DirectoryInfo(Server.MapPath("/Archives/"));
-      var directories = directory.GetDirectories();
       Response.ContentType = "application/xml";
-      return View(directories);
+      return View(ArchiveManager.Groups);
     }
 
     /*==========================================================================================================================
@@ -37,12 +37,12 @@ namespace SkeptiForum.Archive.Controllers {
     /// </summary>
     /// <param name="id">The identifier of the Facebook Group.</param>
     /// <returns>An index of posts associated with the specified group.</returns>
-    public ActionResult Group(long id = -1) {
+    public async Task<ActionResult> Group(long id = -1) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate group identifier
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (id < 1 || !System.IO.Directory.Exists(Server.MapPath("/Archives/" + id))) {
+      if (id < 1 || !ArchiveManager.Groups.Contains(id)) {
         return HttpNotFound("A group with the ID '" + id + "' does not exist.");
       }
 
@@ -57,15 +57,9 @@ namespace SkeptiForum.Archive.Controllers {
       ViewData["GroupId"] = id;
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Retrieve JSON from disk
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var directory = new System.IO.DirectoryInfo(Server.MapPath("/Archives/" + id + "/"));
-      var files = directory.GetFiles("*.json");
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Return data to view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return View(files);
+      return View(await ArchiveManager.StorageProvider.GetPostsAsync(id));
 
     }
 
