@@ -55,7 +55,7 @@
       var groupId     = pathArray[2];
       var postId      = pathArray[4];
 
-      $http.get('/Archives/' + groupId + '/' + groupId + '_' + postId + '.json').
+      $http.get('/Api/Groups/' + groupId + '/' + postId).
         success(function(data, status, headers, config) {      
           vm.post = data;
         }
