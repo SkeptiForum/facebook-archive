@@ -6,6 +6,7 @@
 using System;
 using System.Web.Mvc;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace SkeptiForum.Archive.Controllers {
 
@@ -36,28 +37,26 @@ namespace SkeptiForum.Archive.Controllers {
     ///   </para>
     /// </remarks>
     /// <returns>A view containing all details of the requested current thread.</returns>
-    public ActionResult Details(long groupId, long postId = 0) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var jsonPath = Server.MapPath("/Archives/" + groupId + "/" + groupId + "_" + postId + ".json");
+    public async Task<ActionResult> Details(long groupId, long postId = 0) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate group Id
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (groupId < 1 || !System.IO.Directory.Exists(Server.MapPath("/Archives/" + groupId))) {
+      if (groupId < 1 || !ArchiveManager.Groups.Contains(groupId)) {
         return HttpNotFound("A group with the ID '" + groupId + "' does not exist.");
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | If the post doesn't exist in the archive, redirect to Facebook
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (postId > 0 && !System.IO.File.Exists(jsonPath)) {
-      //return HttpNotFound("A post with the name '" + postId + "' does not exist. If it is a newer post, it may not have been archived yet.");
+      if (!await ArchiveManager.StorageProvider.PostExistsAsync(groupId, postId)) {
         return Redirect("https://www.facebook.com/groups/" + groupId + "/permalink/" + postId);
       }
-      dynamic json = JObject.Parse(System.IO.File.ReadAllText(jsonPath));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retreive post
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      dynamic json = await ArchiveManager.StorageProvider.GetPostAsync(groupId, postId);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Provide preprocessing of variables required by the view
