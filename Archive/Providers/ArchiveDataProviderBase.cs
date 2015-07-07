@@ -65,10 +65,18 @@ namespace SkeptiForum.Archive.Providers {
     /// <summary>
     ///   
     /// </summary>
-    public async Task<Collection<dynamic>> GetPostsAsyc(string groupId) {
+    public async Task<Collection<dynamic>> GetPostsAsyc(string groupId, DateTime? since = null) {
       FacebookGroup group = ArchiveManager.Groups[groupId];
-      return await GetPostsAsync(group.Id);
+      return await GetPostsAsync(group.Id, since);
     }
+
+    /*==========================================================================================================================
+    | METHOD: GET POSTS (OVERLOAD)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   
+    /// </summary>
+    public abstract Task<Collection<dynamic>> GetPostsAsync(long groupId, DateTime? since = null);
 
     /*==========================================================================================================================
     | METHOD: GET GROUPS (ASYNCHRONOUS)
@@ -77,8 +85,6 @@ namespace SkeptiForum.Archive.Providers {
     ///   
     /// </summary>
     public abstract Task<Collection<dynamic>> GetGroupsAsync(bool? publicOnly = null, string filter = "Skepti-Forum");
-
-    public abstract Task<Collection<dynamic>> GetPostsAsync(long groupId);
 
     /*==========================================================================================================================
     | METHOD: GET POST (ASYNCHRONOUS)

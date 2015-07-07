@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tr ng-repeat="group in vm.siteGroups" ng-class="{inactive: !group.isMemberOf}">
-      <td ng-bind="group.Name"></td>
+      <td><a ng-href="https://www.facebook.com/groups/{{group.Id}}"><span ng-bind="group.Name" /></a></td>
       <td ng-bind="group.IsPublic"></td>
       <td am-time-ago="group.LastArchived"></td>
       <td ng-bind="group.PostCount | number:0"></td>

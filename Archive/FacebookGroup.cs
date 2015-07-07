@@ -169,8 +169,8 @@ namespace SkeptiForum.Archive {
     ///   continue requesting posts from the API via paging until there are no more posts available.
     /// </summary>
     /// <returns>A collection of dynamic objects, each representing the JSON response from the Facebook Graph API.</returns>
-    public async Task<Collection<dynamic>> GetPostsAsync() {
-      return await ArchiveManager.DataProvider.GetPostsAsync(Id);
+    public async Task<Collection<dynamic>> GetPostsAsync(DateTime? since = null) {
+      return await ArchiveManager.DataProvider.GetPostsAsync(Id, since);
     }
 
   } //Class

@@ -81,26 +81,60 @@ namespace SkeptiForum.Archive.Providers {
     ///   continue requesting posts from the API via paging until there are no more posts available.
     /// </summary>
     /// <returns>A collection of dynamic objects, each representing the JSON response from the Facebook Graph API.</returns>
-    public override async Task<Collection<dynamic>> GetPostsAsync(long groupId) {
+    public override async Task<Collection<dynamic>> GetPostsAsync(long groupId, DateTime? since = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish defaults
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var postLimit             = 50;
+      var commentLimit          = 750;
+      var updatePostLimit       = 5000;
+      var postFields            = "id,from,to,message,message_tags,name,object_id,picture,properties,shares,source,"
+                                + "caption,description,link,story,story_tags,status_type,type,created_time,is_expired,"
+                                + "likes.limit(500)";
+      var commentFields         = "id,from,message,message_tags,created_time,like_count,attachment";
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      postLimit                 = ArchiveManager.Configuration?.Queries?.Posts?.Limit ?? postLimit;
+      commentLimit              = ArchiveManager.Configuration?.Queries?.Comments?.Limit ?? commentLimit;
+      postFields                = ArchiveManager.Configuration?.Queries?.Posts?.Fields ?? postFields;
+      commentFields             = ArchiveManager.Configuration?.Queries?.Comments?.Fields ?? commentFields;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish variables
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var client = GetClient();
-      var postLimit = ArchiveManager.Configuration?.Queries?.Posts?.Limit ?? 50;
-      var commentLimit = ArchiveManager.Configuration?.Queries?.Comments?.Limit ?? 750;
-      var postsCollection = new Collection<dynamic>();
-      var postFields = "id,from,to,message,message_tags,name,object_id,picture,properties,shares,source,"
-        + "caption,description,link,story,story_tags,status_type,type,created_time,is_expired,"
-        + "likes.limit(500)";
-      var commentFields = "id,from,message,message_tags,created_time,like_count,attachment";
-      var groupPath = groupId + "/feed"
-        + "?limit=" + postLimit
-        + "&fields=" + (ArchiveManager.Configuration?.Queries?.Posts?.Fields ?? postFields);
-      if (groupPath.Length > 0 && groupPath.IndexOf("comments") < 0) {
-        groupPath += ",comments"
-          + ".limit(" + commentLimit + ")"
-          + "{" + (ArchiveManager.Configuration?.Queries?.Comments?.Fields ?? commentFields) + "}";
+      var client                = GetClient();
+      var postsCollection       = new Collection<dynamic>();
+      var taskRunner            = new Collection<Task<dynamic>>();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish group path
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var groupQuerystring      = "fields=" + (postFields);
+      if (groupQuerystring.IndexOf("comments") < 0) {
+        groupQuerystring        += ",comments.limit(" + commentLimit + "){" + (commentFields) + "}";
+      }
+      var groupPath             = groupId + "/feed?limit=" + postLimit + "&" + groupQuerystring;
+      if (since != null) {
+        groupPath               += "&since=" + since.Value.ToString("o");
+      }
+      var updatePostPath        = groupId + "/feed?limit=" + updatePostLimit + "&fields=created_time,updated_time";
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish queue for legacy posts
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Facebook's "since" parameter only applied to "created_time" not "updated_time". The following looks through an index of 
+      | all posts to find those that were created before the "since" value, but updated afterwards. It then creates a queue of 
+      | requests for those individual threads so they can be rearchived.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (since.HasValue) {
+        dynamic postIndex = await client.GetTaskAsync<dynamic>(updatePostPath);
+        foreach (dynamic post in postIndex.data) {
+          if (DateTime.Parse(post.created_time) > since.Value || DateTime.Parse(post.updated_time) < since.Value) continue;
+          taskRunner.Add(client.GetTaskAsync<dynamic>(post.id + "?" + groupQuerystring));
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -129,6 +163,15 @@ namespace SkeptiForum.Archive.Providers {
         if (posts.data.Count == postLimit) {
           groupPath = posts.paging.next;
         }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Process queue of updated comments
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      while (taskRunner.Count > 0) {
+        Task<dynamic> getPostTask = await Task.WhenAny(taskRunner);
+        taskRunner.Remove(getPostTask);
+        postsCollection.Add(await getPostTask);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

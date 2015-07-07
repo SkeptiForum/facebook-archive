@@ -48,16 +48,14 @@ namespace SkeptiForum.Archive.Controllers {
       | Retrieve all posts associated with the groups
       \-----------------------------------------------------------------------------------------------------------------------*/
       var group = ArchiveManager.Groups[groupId];
-      var groupPosts = await group.GetPostsAsync();
+      var groupPosts = await group.GetPostsAsync(group.LastArchived);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Write each post to disk
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (dynamic post in groupPosts) {
         var id = Int64.Parse(post.id.Substring(post.id.IndexOf("_")+1));
-        if (!await ArchiveManager.StorageProvider.PostExistsAsync(groupId, id)) {
-          await ArchiveManager.StorageProvider.SetPostAsync(post);
-        }
+        await ArchiveManager.StorageProvider.SetPostAsync(post);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
