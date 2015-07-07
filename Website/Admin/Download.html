@@ -1,0 +1,34 @@
+﻿<article>
+
+  <h1>Skepti-Forum: Archive Posts</h1>
+
+  <div id="status"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>Public?</td>
+        <td>Last Archived</td>
+        <td>Post Count</td>
+        <td>Refresh?</td>
+      </tr>
+    </thead>
+    <tr ng-repeat="group in vm.siteGroups" ng-class="{inactive: !group.isMemberOf}">
+      <td ng-bind="group.Name"></td>
+      <td ng-bind="group.IsPublic"></td>
+      <td am-time-ago="group.LastArchived"></td>
+      <td ng-bind="group.PostCount | number:0"></td>
+      <td><button ng-show="group.isMemberOf" ng-disabled="group.Processing" ng-click="vm.updateGroup(group)">Refresh</button></td>
+    </tr>
+  </table>
+
+  <form method="post">
+    <br />
+    <button id="btnLogin" ng-show="!vm.isAuthenticated" ng-click="vm.login()">Login</button>
+    <button id="btnLogout" ng-show="vm.isAuthenticated" ng-click="vm.logout()">Logout</button>
+    <button id="btnRetrieve" ng-show="vm.isAuthenticated">Download All Posts</button>
+    <fb:login-button auto_logout_link="true" scope="user_groups" onlogin="checkLoginState();"></fb:login-button>
+  </form>
+
+</article>

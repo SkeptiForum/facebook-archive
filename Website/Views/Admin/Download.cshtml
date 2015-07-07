@@ -2,48 +2,23 @@
   Layout = "~/Views/_Layout.cshtml";
 }
 
-<main>
-  <h1>Skepti-Forum: Archive Posts</h1>
+<base href="/Groups">
 
-  <div id="status"></div>
+<main ng-app="admin" ng-include="'/Admin/Download.html'" ng-controller="DownloadController as vm" ng-show="vm.siteGroups"></main>
 
-  <fb:login-button auto_logout_link="true" scope="user_groups" onlogin="checkLoginState();"></fb:login-button>
-
-  <table>
-    <thead>
-      <tr>
-        <td>Name</td>
-        <td>Public?</td>
-        <td>Last Archived</td>
-        <td>Post Count</td>
-        <td>Refresh?</td>
-      </tr>
-    </thead>
-    @foreach (var group in Model) {
-      <tr>
-        <td>@group.Name</td>
-        <td>@group.IsPublic</td>
-        <td>@group.LastArchived.ToString("MMM d, yyyy")</td>
-        <td>@group.PostCount.ToString("#,###")</td>
-        <td>[Refresh]</td>
-      </tr>
-    }
-  </table>
-
-  <form method="post">
-    <br />
-    <button id="btnRetrieve" style="visibility:hidden">Download All Posts</button>
-  </form>
-
-  <ul>
-    @foreach (var key in ViewData) {
-      <li>@key.Key: @key.Value</li>
-    }
-  </ul>
-
-</main>
+<ul>
+  @foreach (var key in ViewData) {
+    <li>@key.Key: @key.Value</li>
+  }
+</ul>
 
 @section Scripts {
   <script src="~/Scripts/jquery-2.1.4.min.js"></script>
-  <script src="~/Shared/Scripts/Facebook.js"></script>
+  <script src="~/Scripts/angular.min.js"></script>
+  <script src="~/Scripts/angular-cookies.min.js"></script>
+  <script src="~/Scripts/moment.min.js"></script>
+  <script src="~/Scripts/angular-moment.min.js"></script>
+  <script src="~/Shared/Scripts/Admin/admin.js"></script>
+  <script src="~/Admin/Download.html.js"></script>
+  <script src="~/Shared/Scripts/Admin/ngFacebook.js"></script>
 }
