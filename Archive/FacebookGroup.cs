@@ -145,14 +145,19 @@ namespace SkeptiForum.Archive {
     | PROPERTY: LAST ARCHIVED
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the time that the group was previously archived.
+    ///   Gets or sets the time that the group was previously archived. 
     /// </summary>
+    /// <remarks>
+    ///   When setting the last archived date, the <see cref="PostCount"/> property is reset. This ensures that the value is 
+    ///   dynamically updated the next time the property is called.
+    /// </remarks>
     public DateTime LastArchived {
       get {
         return _lastArchived;
       }
       set {
         _lastArchived = value;
+        _postCount = -1;
       }
     }
 
