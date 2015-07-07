@@ -19,7 +19,7 @@
       <td ng-bind="group.IsPublic"></td>
       <td am-time-ago="group.LastArchived"></td>
       <td ng-bind="group.PostCount | number:0"></td>
-      <td><button ng-show="group.isMemberOf" ng-disabled="group.Processing" ng-click="vm.updateGroup(group)">Refresh</button></td>
+      <td><button ng-style="{'visibility': group.isMemberOf? 'visible':'hidden' }" ng-disabled="group.Processing" ng-click="vm.updateGroup(group)">Refresh</button></td>
     </tr>
   </table>
 
