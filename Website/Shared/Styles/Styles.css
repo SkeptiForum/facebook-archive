@@ -1,5 +1,6 @@
 ﻿html {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  font-weight: 400;
   font-size: 0.9rem;
   color: #404040;
 }
@@ -10,8 +11,8 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6, h7 {
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  font-weight: lighter;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  font-weight: 400;
 }
 
 h1 {
@@ -66,7 +67,8 @@ a {
 
 .metadata {
   font-style: italic;
-  margin: 3px 0px;
+  margin: 2px 0px 6px 0px;
+  font-size: 0.9rem;
 }
 
 .stats {
@@ -127,7 +129,7 @@ img.avatar {
 
 .comment {
   clear: both;
-  padding-left: 5px;
+  padding-left: 15px;
   padding-bottom: 2px;
   border-left: 5px solid white;
 }
