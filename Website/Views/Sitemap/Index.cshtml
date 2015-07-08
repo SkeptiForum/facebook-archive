@@ -3,7 +3,7 @@
 <sitemapindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   @foreach (FacebookGroup group in @Model) {
     <sitemap>
-      <loc>http://@Request.Url.Host/Sitemap/Group/@group.Id</loc>
+      <loc>http://@Request.Url.Host/Groups/@(group.Key?? group.Id.ToString())/Sitemap</loc>
       <lastmod>@group.LastArchived.ToString("O")</lastmod>
     </sitemap>
   }

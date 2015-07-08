@@ -44,9 +44,10 @@ namespace SkeptiForum.Archive {
     /// </summary>
     /// <param name="name">The key name of the group, used for the Facebook URL (e.g., "GMOSF").</param>
     /// <returns>True of a group with the provided <paramref name="name"/> exists, otherwise false.</returns>
-    public bool Contains(string name) {
+    public bool Contains(string key) {
       foreach (FacebookGroup group in Items) {
-        if (group.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) return true;
+        if (group.Key == null) continue;
+        if (group.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)) return true;
       }
       return false;
     }
@@ -59,12 +60,13 @@ namespace SkeptiForum.Archive {
     ///   its name, as opposed to the group's numeric identifier (which is the default indexer).
     /// </summary>
     /// <param name="name">The key name of the group, used for the Facebook URL (e.g., "GMOSF").</param>
-    public FacebookGroup this[string name] {
+    public FacebookGroup this[string key] {
       get {
         foreach (FacebookGroup group in Items) {
-          if (group.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) return group;
+          if (group.Key == null) continue;
+          if (group.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)) return group;
         }
-        throw new KeyNotFoundException("A group with the key '" + name + " could not be found.");
+        throw new KeyNotFoundException("A group with the key '" + key + " could not be found.");
       }
     }
 

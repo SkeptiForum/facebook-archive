@@ -35,14 +35,9 @@ namespace SkeptiForum.Archive.Web {
       routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Provide consistent routing with Facebook's Permalink URLs
+      | Enable attribute-based routing
       \-----------------------------------------------------------------------------------------------------------------------*/
-      routes.MapRoute(
-        name: "Threads",
-        url: "groups/{groupId}/permalink/{postId}",
-        defaults: new { controller = "Threads", action = "Details", postId = UrlParameter.Optional },
-        constraints: new { groupId = @"^\d+|[a-zA-Z]*SF", postId = @"\d+" }
-      );
+      routes.MapMvcAttributeRoutes();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle default route convention

@@ -18,15 +18,35 @@ namespace SkeptiForum.Archive.Controllers {
     }
 
     // GET api/Groups/5
+    [Route("{groupKey:alpha}")]
+    public FacebookGroup Get(string groupKey) {
+      return ArchiveManager.Groups[groupKey];
+    }
+
+    // GET api/Groups/5
     [Route("{groupId:long}")]
     public FacebookGroup Get(long groupId) {
       return ArchiveManager.Groups[groupId];
     }
 
     // GET api/Groups/5/5/
+    [Route("{groupKey:alpha}/{postId:long}")]
+    public dynamic GetPost(string groupKey, long postId) {
+      var group = ArchiveManager.Groups[groupKey];
+      return GetPost(group.Id, postId);
+    }
+
+    // GET api/Groups/5/5/
     [Route("{groupId:long}/{postId:long}")]
     public dynamic GetPost(long groupId, long postId) {
       return ArchiveManager.StorageProvider.GetPostAsync(groupId, postId).Result;
+    }
+
+    [Route("{groupKey:alpha}/Update")]
+    [HttpPost]
+    public async Task<FacebookGroup> UpdateGroupAsync(string groupKey) {
+      var group = ArchiveManager.Groups[groupKey];
+      return await UpdateGroupAsync(group.Id);
     }
 
     [Route("{groupId:long}/Update")]
