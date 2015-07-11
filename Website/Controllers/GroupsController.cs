@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using System.Web.Http;
 
 namespace SkeptiForum.Archive.Controllers {
@@ -31,15 +33,15 @@ namespace SkeptiForum.Archive.Controllers {
 
     // GET api/Groups/5/5/
     [Route("{groupKey:alpha}/{postId:long}")]
-    public dynamic GetPost(string groupKey, long postId) {
+    public async Task<dynamic> GetPostAsync(string groupKey, long postId) {
       var group = ArchiveManager.Groups[groupKey];
-      return GetPost(group.Id, postId);
+      return await GetPostAsync(group.Id, postId);
     }
 
     // GET api/Groups/5/5/
     [Route("{groupId:long}/{postId:long}")]
-    public dynamic GetPost(long groupId, long postId) {
-      return ArchiveManager.StorageProvider.GetPostAsync(groupId, postId).Result;
+    public async Task<dynamic> GetPostAsync(long groupId, long postId) {
+      return await ArchiveManager.StorageProvider.GetPostAsync(groupId, postId);
     }
 
     [Route("{groupKey:alpha}/Update")]

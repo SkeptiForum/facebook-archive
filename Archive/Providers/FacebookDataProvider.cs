@@ -81,7 +81,7 @@ namespace SkeptiForum.Archive.Providers {
     ///   continue requesting posts from the API via paging until there are no more posts available.
     /// </summary>
     /// <returns>A collection of dynamic objects, each representing the JSON response from the Facebook Graph API.</returns>
-    public override async Task<Collection<dynamic>> GetPostsAsync(long groupId, DateTime? since = null) {
+    public override async Task<Collection<dynamic>> GetPostsAsync(long groupId, DateTime? since = null, DateTime? until = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish defaults
@@ -120,6 +120,9 @@ namespace SkeptiForum.Archive.Providers {
       if (since != null) {
         groupPath               += "&since=" + since.Value.ToString("o");
       }
+      if (until != null) {
+         groupPath               += "&until=" + until.Value.ToString("o");
+      }
       var updatePostPath        = groupId + "/feed?limit=" + updatePostLimit + "&fields=created_time,updated_time";
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -127,13 +130,34 @@ namespace SkeptiForum.Archive.Providers {
       >-------------------------------------------------------------------------------------------------------------------------
       | Facebook's "since" parameter only applied to "created_time" not "updated_time". The following looks through an index of 
       | all posts to find those that were created before the "since" value, but updated afterwards. It then creates a queue of 
-      | requests for those individual threads so they can be rearchived.
+      | requests for those individual threads so they can be rearchived. Ignore if an explicit end date is specified, suggesting
+      | interest in an exclusive range.
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (since.HasValue) {
+      if (since.HasValue && !until.HasValue) {
         dynamic postIndex = await client.GetTaskAsync<dynamic>(updatePostPath);
         foreach (dynamic post in postIndex.data) {
-          if (DateTime.Parse(post.created_time) > since.Value || DateTime.Parse(post.updated_time) < since.Value) continue;
+
+        //Determine if post is newer; if it is, it will be caught in the next set of queries
+          if (DateTime.Parse(post.created_time) > since.Value) continue;
+
+        //Get id
+          string fullId = post.id;
+          if (fullId.IndexOf("_") >= 0) {
+            fullId = fullId.Substring(fullId.IndexOf("_") + 1);
+          }
+          long id = Int64.Parse(fullId);
+
+        //Determine if post has been update recently
+          if (DateTime.Parse(post.updated_time) < since.Value) continue;
+
+        //Determine if post is already known
+          if (ArchiveManager.StorageProvider.PostExistsAsync(groupId, id).Result) {
+          // ### NOTE JJC090715: This chokes on legacy schema; need to determine which fields are inappropriate for older posts.
+          }
+
+        //Add the post to a queue to be downloaded
           taskRunner.Add(client.GetTaskAsync<dynamic>(post.id + "?" + groupQuerystring));
+
         }
       }
 
@@ -160,7 +184,7 @@ namespace SkeptiForum.Archive.Providers {
           postsCollection.Add(post);
         }
         groupPath = "";
-        if (posts.data.Count == postLimit) {
+        if (posts.data.Count > postLimit * 0.8) {
           groupPath = posts.paging.next;
         }
       }

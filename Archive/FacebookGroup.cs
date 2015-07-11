@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using Facebook;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace SkeptiForum.Archive {
 
@@ -132,7 +133,7 @@ namespace SkeptiForum.Archive {
     public int PostCount {
       get {
         if (_postCount < 0) {
-          _postCount = ArchiveManager.StorageProvider.GetPostsAsync(Id).Result.Count;
+          _postCount = ArchiveManager.StorageProvider.GetPostsAsync(Id).Result.Count();
         }
         return _postCount;
       }
@@ -169,8 +170,8 @@ namespace SkeptiForum.Archive {
     ///   continue requesting posts from the API via paging until there are no more posts available.
     /// </summary>
     /// <returns>A collection of dynamic objects, each representing the JSON response from the Facebook Graph API.</returns>
-    public async Task<Collection<dynamic>> GetPostsAsync(DateTime? since = null) {
-      return await ArchiveManager.DataProvider.GetPostsAsync(Id, since);
+    public async Task<Collection<dynamic>> GetPostsAsync(DateTime? since = null, DateTime? until = null) {
+      return await ArchiveManager.DataProvider.GetPostsAsync(Id, since, until);
     }
 
   } //Class
