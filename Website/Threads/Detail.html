@@ -22,7 +22,7 @@
   </div>
 
   <section class="attachment" ng-if="vm.post.name" property="citation" typeof="CreativeWork">
-    <img ng-src="{{vm.post.picture}}" property="image" />
+    <img property="image" ng-src="{{vm.post.picture}}" />
     <h3 property="headline" content="{{vm.post.name}}"><a ng-href="{{vm.post.link}}"><span ng-bind="vm.post.name" /></a></h3>
     <div ng-if="vm.post.description" class="description"><span ng-bind="vm.post.description" property="description" /></div>
     <div ng-if="vm.post.caption" property="author" typeof="Organization">Source: <span ng-bind="vm.post.caption" property="name" /></div>
@@ -74,11 +74,15 @@
     <div ng-bind="comment.message" class="message" property="text" />
 
     <div class="attachment {{comment.attachment.type}}" ng-if="comment.attachment.title" property="citation" typeof="CreativeWork">
-      <img ng-src="{{comment.attachment.media.image.src}}" width="{{comment.attachment.media.image.width}}" height="{{comment.attachment.media.image.height}}" property="image" />
+      <img property="image" ng-src="{{comment.attachment.media.image.src}}" width="{{comment.attachment.media.image.width}}" height="{{comment.attachment.media.image.height}}" />
       <h5 property="headline" content="{{comment.attachment.title}}"><a ng-href="{{comment.attachment.url}}" ng-bind="comment.attachment.title" /></h5>
       <div class="description"><span ng-bind="comment.attachment.description" property="description" /></div>
       <div class="clearfix"></div>
     </div>
+
+    <a ng-if="comment.attachment.type == 'photo'" ng-href="{{comment.attachment.url}}">
+      <img property="image" ng-src="{{comment.attachment.media.image.src}}" width="{{comment.attachment.media.image.width}}" height="{{comment.attachment.media.image.height}}" />
+    </a>
 
   </article>
 
