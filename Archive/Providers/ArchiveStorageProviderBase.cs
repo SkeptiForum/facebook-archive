@@ -49,7 +49,7 @@ namespace SkeptiForum.Archive.Providers {
     /// <summary>
     ///   
     /// </summary>
-    public async Task<List<FileInfo>> GetPostsAsync(string groupId) {
+    public async Task<IEnumerable<FileInfo>> GetPostsAsync(string groupId) {
       FacebookGroup group = ArchiveManager.Groups[groupId];
       return await GetPostsAsync(group.Id);
     }
@@ -60,7 +60,7 @@ namespace SkeptiForum.Archive.Providers {
     /// <summary>
     ///   
     /// </summary>
-    public abstract Task<List<FileInfo>> GetPostsAsync(long groupId);
+    public abstract Task<IEnumerable<FileInfo>> GetPostsAsync(long groupId);
 
     /*==========================================================================================================================
     | METHOD: GET POST

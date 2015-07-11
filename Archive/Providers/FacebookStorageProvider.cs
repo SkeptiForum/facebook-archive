@@ -81,10 +81,6 @@ namespace SkeptiForum.Archive.Providers {
 
     /*==========================================================================================================================
     | METHOD: GET POST (ASYNCHRONOUS)
-    >---------------------------------------------------------------------------------------------------------------------------
-    | ### TODO JJC060715: Having unexpected issues with asynchronous reading, likely due to how the file is encoded. Will need
-    | to revisit this later. For now, using a basic synchronous call (but keeping the async signature to maintain 
-    | API compatibility).
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   
@@ -94,19 +90,14 @@ namespace SkeptiForum.Archive.Providers {
       var postPath = ArchiveManager.Configuration.StorageDirectory + "/" + groupId + "/" + groupId + "_" + postId + ".json";
       var postMappedPath = HttpContext.Current.Server.MapPath(postPath);
 
-      return JObject.Parse(File.ReadAllText(postMappedPath));
+      string json; // = File.ReadAllText(postMappedPath);
 
-      var output = new StringBuilder();
-      var buffer = new char[0x1000];
-      int numRead;
-
-      using (StreamReader reader = new StreamReader(postMappedPath, Encoding.UTF8)) {
-        while ((numRead = await reader.ReadAsync(buffer, 0, buffer.Length)) != 0) {
-          output.Append(buffer);
-        }
+      using (StreamReader reader = File.OpenText(postMappedPath)) {
+        json = await reader.ReadToEndAsync();
       }
 
-      return JObject.Parse(output.ToString());
+      return JObject.Parse(json);
+
 
     }
 
@@ -116,13 +107,12 @@ namespace SkeptiForum.Archive.Providers {
     /// <summary>
     ///   
     /// </summary>
-    public async override Task<List<FileInfo>> GetPostsAsync(long groupId) {
+    public async override Task<IEnumerable<FileInfo>> GetPostsAsync(long groupId) {
       var postPath = ArchiveManager.Configuration.StorageDirectory + "/" + groupId + "/";
       var postMappedPath = HttpContext.Current.Server.MapPath(postPath);
       var directory = new DirectoryInfo(postMappedPath);
       if (!directory.Exists) return new List<FileInfo>();
-      var files = directory.GetFiles("*.json");
-      return files.ToList<FileInfo>();
+      return directory.EnumerateFiles("*.json");
     }
 
     /*==========================================================================================================================
@@ -152,6 +142,9 @@ namespace SkeptiForum.Archive.Providers {
         )) {
         await sourceStream.WriteAsync(encodedText, 0, encodedText.Length);
       }
+
+      File.SetLastWriteTime(filePath, (DateTime)json.updated_time);
+
     }
 
   } //Class
