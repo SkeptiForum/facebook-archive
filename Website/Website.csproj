@@ -941,7 +941,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\GroupsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\IndexController.cs" />
+    <Compile Include="Controllers\ActivityLogController.cs" />
     <Compile Include="Controllers\SitemapController.cs" />
     <Compile Include="Controllers\ThreadsController.cs" />
     <Compile Include="Global.asax.cs">
