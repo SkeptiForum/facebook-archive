@@ -114,7 +114,7 @@ namespace SkeptiForum.Archive.Web.Controllers {
           var post = await task;
           ViewData["PostLoaded" + post.id] = "The post by " + (post.from?.name ?? "[Unknown]") + " has finished loading: " + _stopwatch.Elapsed.TotalSeconds;
           string postPath = HttpContext.Server.MapPath(ArchiveManager.Configuration.StorageDirectory + "/" + post.to.data[0].id + "/" + post.id + ".json");
-          System.IO.File.SetLastWriteTime(postPath, (DateTime)post.updated_time);
+          System.IO.File.SetLastWriteTime(postPath, (DateTime)(post.updated_time?? DateTime.Now));
           IndexObject(database, post, ObjectType.Post, groupId);
         }
         ViewData["Saving" + groupId] = "Saving " + groupId + " changes to database: " + _stopwatch.Elapsed.TotalSeconds;
