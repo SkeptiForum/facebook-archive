@@ -62,7 +62,7 @@ namespace SkeptiForum.Archive.Configuration {
     /// </summary>
     /// <remarks>
     ///   The usage of this attribute may vary depending on the storage medium. For the default 
-    ///   <see cref="SkeptiForum.Archive.Providers.FacebookStorageProvider"/>, this repesents the relative path to the folder
+    ///   <see cref="SkeptiForum.Archive.Providers.FileSystemStorageProvider"/>, this repesents the relative path to the folder
     ///   where the files will be stored. By default, the value is set to "/Archive/".
     /// </remarks>
     [ConfigurationProperty("storageDirectory", DefaultValue = "/Archive/", IsRequired = false)]
@@ -121,7 +121,7 @@ namespace SkeptiForum.Archive.Configuration {
     /// </summary>
     /// <remarks>
     ///   By default, assuming no storage providers are configured, the value will be set to 
-    ///   <see cref="SkeptiForum.Archive.Providers.FacebookStorageProvider"/>, which storage group configuration and post data
+    ///   <see cref="SkeptiForum.Archive.Providers.FileSystemStorageProvider"/>, which storage group configuration and post data
     ///   to the harddrive.
     /// </remarks>
     [ConfigurationProperty("defaultStorageProvider", DefaultValue = "FacebookProvider", IsRequired = false)]
