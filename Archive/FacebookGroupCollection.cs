@@ -20,6 +20,10 @@ namespace SkeptiForum.Archive {
   ///   Provides a collection of <see cref="SkeptiForum.Archive.FacebookGroup"/> objects. Also includes methods for loading 
   ///   both groups and group posts from the Facebook Graph API.
   /// </summary>
+  /// <remarks>
+  ///   Data and storage access is not actually performed by this class. Instead, methods are provided as convenient shortcuts 
+  ///   to the configured <see cref="ArchiveManager.DataProvider"/> and <see cref="ArchiveManager.StorageProvider"/>.
+  /// </remarks>
   public class FacebookGroupCollection : KeyedCollection<long, FacebookGroup> {
 
     /*==========================================================================================================================
@@ -74,7 +78,8 @@ namespace SkeptiForum.Archive {
     | FACTORY METHOD: CREATE FROM STORAGE PROVIDER (ASYNCHRONOUS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   
+    ///   Returns a new instance of a <see cref="FacebookGroupCollection"/> prepopulated with content from <see 
+    ///   cref="ArchiveManager.Groups"/>.
     /// </summary>
     /// <returns></returns>
     public static async Task<FacebookGroupCollection> CreateFromStorageProvider() {

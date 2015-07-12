@@ -17,6 +17,14 @@ namespace SkeptiForum.Archive.Providers {
   /*============================================================================================================================
   | CLASS: FACEBOOK DATA PROVIDER
   \---------------------------------------------------------------------------------------------------------------------------*/
+  /// <summary>
+  ///   Provides a concrete implementation of the <see cref="ArchiveDataProviderBase"/> configured to talk to Facebook via the 
+  ///   <see cref="Facebook.FacebookClient"/> service. 
+  /// </summary>
+  /// <remarks>
+  ///   This provider depends on API information being configured via the <see cref="Configuration.ApiElement"/> element. 
+  ///   Without this data, the provider will throw exceptions.
+  /// </remarks>
   public class FacebookDataProvider : ArchiveDataProviderBase {
 
     /*==========================================================================================================================
@@ -27,7 +35,7 @@ namespace SkeptiForum.Archive.Providers {
     | CONSTRUCTOR
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///
+    ///   Constructs a new instance of the <see cref="FacebookDataProvider"/> provider.
     /// </summary>
     public FacebookDataProvider() { }
 
@@ -35,11 +43,13 @@ namespace SkeptiForum.Archive.Providers {
     | PROPERTY: CLIENT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets a reference to a <see cref="FacebookClient" /> object that will be shared by all users. It is expected that 
-    ///   client code will check to ensure the client is instantiated with a <see cref="FacebookClient.AccessToken" /> and 
-    ///   <see cref="FacebookClient.AppSecret" /> before referencing; if these are not set, then it is the responsibility of 
-    ///   the client to look these up and provide them to the class.
+    ///   Gets a reference to a <see cref="FacebookClient" /> object that will be shared by all users. 
     /// </summary>
+    /// <remarks>
+    ///   It is expected that client code will check to ensure the client is instantiated with a <see 
+    ///   cref="FacebookClient.AccessToken" /> and <see cref="FacebookClient.AppSecret" /> before referencing; if these are not 
+    ///   set, then it is the responsibility of the client to look these up and provide them to the class.
+    /// </remarks>
     public FacebookClient GetClient(string accessToken = null) {
       var client = new FacebookClient();
       client.AppId = ArchiveManager.Configuration.Api.AppKey;
@@ -52,11 +62,22 @@ namespace SkeptiForum.Archive.Providers {
     | METHOD: GET LONG LIVED TOKEN
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   When a user authenticated using the Facebook JavaScript SDK, a short-lived (session) access token is returned. This is 
-    ///   not sufficient for continued use of the application. To mitigate this, client code may request that the access token
-    ///   be replaced with a long-term access token. Will additionally return the expiration time of the access token via an 
-    ///   output parameter; this will <i>typically</i> be sixty days, but that is not guaranteed by the Facebook Graph API.
+    ///   Exchanges a short-lived (session) access token with a long-lived (persistent) token, along with that token's 
+    ///   expiration date.
     /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     When a user authenticated using the Facebook JavaScript SDK, a short-lived (session) access token is returned. This 
+    ///     is not sufficient for continued use of the application. To mitigate this, client code may request that the access 
+    ///     token be replaced with a long-term access token. 
+    ///   </para>
+    ///   <para>
+    ///     This overload allows the caller to retrieve the precise expiration of the token. While this is typically two months,
+    ///     this will vary not only by service, but also by other provider-specific conditions. For instance, a service may 
+    ///     return an existing long-lived token which expires two months from the date it was issued, but which may have been 
+    ///     issued at a previous date.
+    ///   </para>
+    /// </remarks>
     /// <param name="accessToken">The short-lived (session) access token assigned by the Facebook JavaScript SDK.</param>
     /// <param name="expiry">The expiration time of the long-term access token returned.</param>
     public override string GetLongLivedToken(string accessToken, out long expiry) {
@@ -74,13 +95,61 @@ namespace SkeptiForum.Archive.Providers {
     }
 
     /*==========================================================================================================================
+    | METHOD: GET GROUPS (ASYNCHRONOUS)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Populates the collection with a list of <see cref="SkeptiForum.Archive.FacebookGroup"/> objects based on a query to the 
+    ///   Facebook API.
+    /// </summary>
+    /// <param name="publicOnly">
+    ///   Determines if only public groups should be listed. Set to false to load closed and private groups; be aware that this 
+    ///   may introduce potential privacy concerns if also loading posts. Optionally overrides the value set for the collection.
+    /// </param>
+    /// <param name="filter">
+    ///   Sets the filter to use in evaluating whether or not to include a group in the collection. This is intended to exclude 
+    ///   groups not affiliated with the Skepti-Forum project. Optionally overrides the value set for the collection.
+    /// </param>
+    /// <returns>A collection of dynamic objects, each representing the JSON response from the Facebook Graph API.</returns>
+    public override async Task<Collection<dynamic>> GetGroupsAsync(bool? publicOnly = null, string filter = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish defaults
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      string fields = ArchiveManager.Configuration?.Queries?.Groups?.Fields ?? "id,name,privacy";
+      int limit = ArchiveManager.Configuration?.Queries?.Groups?.Limit ?? 750;
+
+      publicOnly = publicOnly ?? ArchiveManager.Configuration?.Queries?.Groups?.PublicOnly ?? true;
+      filter = filter ?? ArchiveManager.Configuration?.Queries?.Groups?.Filter ?? "Skepti-Forum";
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish variables
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      dynamic groupCollection = new Collection<dynamic>();
+      dynamic groupResults = await GetClient().GetTaskAsync("me/groups?limit=" + limit + "&fields=" + fields);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Loop through each group and add it to the collection
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (dynamic group in groupResults.data) {
+        if (!String.IsNullOrEmpty(filter) && !group.name.Contains(filter)) continue;
+        if (publicOnly == true && !group.privacy.Equals("open", StringComparison.InvariantCultureIgnoreCase)) continue;
+        FacebookGroup facebookGroup = new FacebookGroup(group);
+        groupCollection.Add(facebookGroup);
+      }
+
+      return groupCollection;
+    }
+
+    /*==========================================================================================================================
     | METHOD: GET POSTS (ASYNCHRONOUS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Asynchronously retrieves all posts and related comments associated with the group from the Facebook Graph API. Will 
-    ///   continue requesting posts from the API via paging until there are no more posts available.
+    ///   Retrieves a collection of posts asynchronously from the backend service, optionally filtering based on a date range
+    ///   based on the key-based identifier.
     /// </summary>
-    /// <returns>A collection of dynamic objects, each representing the JSON response from the Facebook Graph API.</returns>
+    /// <param name="groupId">The unique key identifier for the group to query.</param>
+    /// <param name="since">The (optional) start date to pull records from.</param>
+    /// <param name="until">The (optional) end date to pull records up to.</param>
     public override async Task<Collection<dynamic>> GetPostsAsync(long groupId, DateTime? since = null, DateTime? until = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -206,49 +275,13 @@ namespace SkeptiForum.Archive.Providers {
     }
 
     /*==========================================================================================================================
-    | METHOD: GET GROUPS (ASYNCHRONOUS)
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   
-    /// </summary>
-    /// <returns></returns>
-    public override async Task<Collection<dynamic>> GetGroupsAsync(bool? publicOnly = null, string filter = null) {
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish defaults
-      \-----------------------------------------------------------------------------------------------------------------------*/
-        string fields = ArchiveManager.Configuration?.Queries?.Groups?.Fields ?? "id,name,privacy";
-        int limit = ArchiveManager.Configuration?.Queries?.Groups?.Limit ?? 750;
-
-        publicOnly = publicOnly ?? ArchiveManager.Configuration?.Queries?.Groups?.PublicOnly ?? true;
-        filter = filter ?? ArchiveManager.Configuration?.Queries?.Groups?.Filter ?? "Skepti-Forum";
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Establish variables
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      dynamic groupCollection = new Collection<dynamic>(); 
-      dynamic groupResults = await GetClient().GetTaskAsync("me/groups?limit=" + limit + "&fields=" + fields);
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Loop through each group and add it to the collection
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (dynamic group in groupResults.data) {
-        if (!String.IsNullOrEmpty(filter) && !group.name.Contains(filter)) continue;
-        if (publicOnly == true && !group.privacy.Equals("open", StringComparison.InvariantCultureIgnoreCase)) continue;
-        FacebookGroup facebookGroup = new FacebookGroup(group);
-        groupCollection.Add(facebookGroup);
-      }
-
-      return groupCollection;
-    }
-
-    /*==========================================================================================================================
     | METHOD: GET POST (ASYNCHRONOUS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   
+    ///   Retrieves a single post asynchronously from the backend service based on the unique key identifier.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="groupId">The unique key identifier for the group that the post exists in.</param>
+    /// <param name="postId">The unique identifier for the post.</param>
     public override async Task<dynamic> GetPostAsync(long groupId, long postId) {
       return await GetClient().GetTaskAsync("me/groups/" + groupId + "/" + postId);
     }

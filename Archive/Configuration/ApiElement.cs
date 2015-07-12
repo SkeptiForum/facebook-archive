@@ -18,9 +18,12 @@ namespace SkeptiForum.Archive.Configuration {
   | CLASS: API ELEMENT
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides configuration access to API information, such as API keys and secrets. Additionally includes a convenience 
-  ///   property for accessing tokens (which are not stored in the configuration, but rather in cookies).
+  ///   Provides configuration access to API information, such as API keys and secrets.
   /// </summary>
+  /// <remarks>
+  ///   This class additionally includes a convenience property for accessing tokens (which are not stored in the configuration, 
+  ///   but rather in cookies).
+  /// </remarks>
   public class ApiElement : ConfigurationElement {
 
     /*==========================================================================================================================

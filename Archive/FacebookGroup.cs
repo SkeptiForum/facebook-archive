@@ -19,6 +19,10 @@ namespace SkeptiForum.Archive {
   ///   Represents a local reference to a Facebook group. Includes stored metadata representing the group's identifier and name,
   ///   as well as methods for retrieving posts from the group.
   /// </summary>
+  /// <remarks>
+  ///   Data and storage access is not actually performed by this class. Instead, methods are provided as convenient shortcuts 
+  ///   to the configured <see cref="ArchiveManager.DataProvider"/> and <see cref="ArchiveManager.StorageProvider"/>.
+  /// </remarks>
   public class FacebookGroup {
 
     /*==========================================================================================================================
@@ -82,10 +86,12 @@ namespace SkeptiForum.Archive {
     | PROPERTY: KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the unique string identifier associated with a Facebook group. If set, this is used by Facebook for the group's 
-    ///   URL. For instance, the <see cref="Name"/> for the "GMO Skepti-Forum" group is "GMOSF". This value can only be set via 
-    ///   the constructor.
+    ///   Gets the unique string identifier associated with a Facebook group. 
     /// </summary>
+    /// <remarks>
+    ///   If set, this is used by Facebook for the group's URL. For instance, the <see cref="Name"/> for the "GMO Skepti-Forum" 
+    ///   group is "GMOSF". This value can only be set via the constructor.
+    /// </remarks>
     public string Key {
       get {
         return _key;
@@ -126,10 +132,12 @@ namespace SkeptiForum.Archive {
     | PROPERTY: POST COUNT
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the number of posts associated with the current group. The count is based on the number of JSON files 
-    ///   located in the associated storage location for the group. The value may be reset manually, e.g., after downloading 
-    ///   files.
+    ///   Gets or sets the number of posts associated with the current group. 
     /// </summary>
+    /// <remarks>
+    ///   The count is based on the number of JSON files located in the associated storage location for the group. The value may 
+    ///   be reset manually, e.g., after downloading files.
+    /// </remarks>
     public int PostCount {
       get {
         if (_postCount < 0) {
@@ -166,9 +174,11 @@ namespace SkeptiForum.Archive {
     | METHOD: GET POSTS (ASYNCHRONOUS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Asynchronously retrieves all posts and related comments associated with the group from the Facebook Graph API. Will 
-    ///   continue requesting posts from the API via paging until there are no more posts available.
+    ///   Asynchronously retrieves all posts and related comments associated with the group from the Facebook Graph API. 
     /// </summary>
+    /// <remarks>
+    ///   This method will continue requesting posts from the API via paging until there are no more posts available.
+    /// </remarks>
     /// <returns>A collection of dynamic objects, each representing the JSON response from the Facebook Graph API.</returns>
     public async Task<Collection<dynamic>> GetPostsAsync(DateTime? since = null, DateTime? until = null) {
       return await ArchiveManager.DataProvider.GetPostsAsync(Id, since, until);

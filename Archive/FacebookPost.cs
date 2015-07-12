@@ -15,9 +15,14 @@ namespace SkeptiForum.Archive {
   | CLASS: FACEBOOK POST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides a convenience wrapper to a dynamic JSON object representing Facebook's post data. Includes a number of helper
-  ///   properties and methods for accessing frequently requested fields.
+  ///   Provides a convenience wrapper to a dynamic JSON object representing Facebook's post data. 
   /// </summary>
+  /// <remarks>
+  ///   This class does not attempt to provide comprehensive coverage of the Facebook post datamodel. Instead, it simply seeks 
+  ///   to simplify access to frequently requested fields through helper properties and methods. This reduces the complexity and 
+  ///   potential duplication of code within, for instance, views by providing a consistent wrapper for the dynamic data. That 
+  ///   said, the original <see cref="Newtonsoft.Json.Linq.JObject"/> can be referenced through the <see cref="Json"/> property.
+  /// </remarks>
   public class FacebookPost {
 
     /*==========================================================================================================================
@@ -120,6 +125,18 @@ namespace SkeptiForum.Archive {
     public DateTime CreateDate {
       get {
         return DateTime.Parse(_post.created_time.ToString());
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: UPDATE DATE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets the date that the post was last updated.
+    /// </summary>
+    public DateTime UpdateDate {
+      get {
+        return DateTime.Parse(_post.updated_time.ToString());
       }
     }
 
