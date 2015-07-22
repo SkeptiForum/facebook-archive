@@ -80,9 +80,9 @@ namespace SkeptiForum.Archive.Providers {
     ///   posts associated with a group.
     /// </summary>
     /// <param name="groupKey">The unique key identifier for the group to query.</param>
-    public async Task<IEnumerable<FileInfo>> GetPostsAsync(string groupKey) {
+    public async Task<IEnumerable<FileInfo>> GetPostsAsync(string groupKey, DateTime? since = null, DateTime? until = null) {
       FacebookGroup group = ArchiveManager.Groups[groupKey];
-      return await GetPostsAsync(group.Id);
+      return await GetPostsAsync(group.Id, since, until);
     }
 
     /*==========================================================================================================================
@@ -97,7 +97,9 @@ namespace SkeptiForum.Archive.Providers {
     ///   posts associated with a group.
     /// </summary>
     /// <param name="groupId">The unique identifier for the group to query.</param>
-    public abstract Task<IEnumerable<FileInfo>> GetPostsAsync(long groupId);
+    /// <param name="since">The (optional) start date to pull records from.</param>
+    /// <param name="until">The (optional) end date to pull records up to.</param>
+    public abstract Task<IEnumerable<FileInfo>> GetPostsAsync(long groupId, DateTime? since = null, DateTime? until = null);
 
     /*==========================================================================================================================
     | METHOD: GET POST

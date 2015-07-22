@@ -109,7 +109,7 @@ namespace SkeptiForum.Archive.Providers {
     ///   Retrieves a collection of posts asynchronously from the backend service, optionally filtering based on a date range
     ///   based on the key-based identifier.
     /// </summary>
-    /// <param name="groupId">The unique key identifier for the group to query.</param>
+    /// <param name="groupKey">The unique key identifier for the group to query.</param>
     /// <param name="since">The (optional) start date to pull records from.</param>
     /// <param name="until">The (optional) end date to pull records up to.</param>
     public async Task<Collection<dynamic>> GetPostsAsyc(string groupKey, DateTime? since = null, DateTime? until = null) {

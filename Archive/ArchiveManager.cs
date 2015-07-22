@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SkeptiForum.Archive.Providers;
 using SkeptiForum.Archive.Configuration;
+using SkeptiForum.Archive.Reporting.Providers;
 
 namespace SkeptiForum.Archive {
 
@@ -32,12 +33,14 @@ namespace SkeptiForum.Archive {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private static ArchiveSection               _configuration = null;
-    private static FacebookGroupCollection      _groups = null;
-    private static ProviderCollection           _dataProviders = new ProviderCollection();
-    private static ProviderCollection           _storageProviders = new ProviderCollection();
-    private static ArchiveDataProviderBase      _dataProvider = null;
-    private static ArchiveStorageProviderBase   _storageProvider = null;
+    private static ArchiveSection                               _configuration                  = null;
+    private static FacebookGroupCollection                      _groups                         = null;
+    private static ProviderCollection                           _dataProviders                  = new ProviderCollection();
+    private static ProviderCollection                           _storageProviders               = new ProviderCollection();
+    private static ProviderCollection                           _reportingProviders             = new ProviderCollection();
+    private static ArchiveDataProviderBase                      _dataProvider                   = null;
+    private static ArchiveStorageProviderBase                   _storageProvider                = null;
+    private static ArchiveReportingProviderBase                 _reportingProvider              = null;
 
     /*==========================================================================================================================
     | PROPERTY: ARCHIVE SECTION
@@ -111,10 +114,10 @@ namespace SkeptiForum.Archive {
             _dataProvider = new FacebookDataProvider();
           }
           else if (String.IsNullOrWhiteSpace(Configuration.DefaultDataProvider)) {
-            _dataProvider = (ArchiveDataProviderBase)DataProviders[Configuration.DefaultDataProvider];
+            throw new Exception("The defaultDataProvider value is not available from the Archive configuration section (<archive />)");
           }
           else {
-            throw new Exception("The defaultDataProvider value is not available from the Archive configuration section (<archive />)");
+            _dataProvider = (ArchiveDataProviderBase)DataProviders[Configuration.DefaultDataProvider];
           }
         }
         return _dataProvider;
@@ -168,10 +171,10 @@ namespace SkeptiForum.Archive {
             _storageProvider = new FileSystemStorageProvider();
           }
           else if (String.IsNullOrWhiteSpace(Configuration.DefaultDataProvider)) {
-            _storageProvider = (ArchiveStorageProviderBase)StorageProviders[Configuration.DefaultStorageProvider];
+            throw new Exception("The defaultStorageProvider value is not available from the Archive configuration section (<archive />)");
           }
           else {
-            throw new Exception("The defaultStorageProvider value is not available from the Archive configuration section (<archive />)");
+            _storageProvider = (ArchiveStorageProviderBase)StorageProviders[Configuration.DefaultStorageProvider];
           }
         }
         return _storageProvider;
@@ -198,6 +201,51 @@ namespace SkeptiForum.Archive {
           _storageProviders.SetReadOnly();
         }
         return _storageProviders;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: REPORTING PROVIDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Returns a reference to the default reporting provider. 
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     This property should be the primary entry point for any requests to providers, thus ensuring that only the currently
+    ///     configured provider is used. 
+    ///   </para>
+    /// </remarks>
+    public static ArchiveReportingProviderBase ReportingProvider {
+      get {
+        if (_reportingProvider == null) {
+          if (String.IsNullOrWhiteSpace(Configuration.DefaultReportingProvider)) {
+            throw new Exception("The defaultReportingProvider value is not available from the Archive configuration section (<archive />)");
+          }
+          _reportingProvider = (ArchiveReportingProviderBase)ReportingProviders[Configuration.DefaultReportingProvider];
+        }
+        return _reportingProvider;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: REPORTING PROVIDERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a list of all configured reporting providers for the application. 
+    /// </summary>
+    /// <remarks>
+    ///   Typically, access will be provided via the <see cref="ReportingProvider"/> property instance. The <see 
+    ///   cref="ReportingProviders"/> property provides a convenient way of iterating across all providers for instances where more 
+    ///   than one provider may be used.
+    /// </remarks>
+    public static ProviderCollection ReportingProviders {
+      get {
+        if (_reportingProviders.Count == 0) {
+          ProvidersHelper.InstantiateProviders(Configuration.ReportingProviders, _reportingProviders, typeof(ArchiveReportingProviderBase));
+          _reportingProviders.SetReadOnly();
+        }
+        return _reportingProviders;
       }
     }
 

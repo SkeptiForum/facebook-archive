@@ -151,5 +151,39 @@ namespace SkeptiForum.Archive.Configuration {
       }
     }
 
+    /*============================================================================================================================
+    | PROPERTY: DEFAULT REPORTING PROVIDER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets an attribute on the root element representing which configured reporting provider to use. 
+    /// </summary>
+    [ConfigurationProperty("defaultReportingProvider", IsRequired = true)]
+    public string DefaultReportingProvider {
+      get {
+        return (string)this["defaultReportingProvider"];
+      }
+      set {
+        this["defaultReportingProvider"] = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: REPORTING PROVIDERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets a child "reportingProviders" element which allows configuration of a collection of reporting providers.
+    /// </summary>
+    /// <remarks>
+    ///   Reporting providers are responsible for providing access to the social backend, by default Facebook. Reporting providers must 
+    ///   inherit from <see cref="SkeptiForum.Archive.Providers.ArchiveReportingProviderBase"/>.
+    /// </remarks>
+    [ConfigurationProperty("reportingProviders", IsRequired = true)]
+    public ProviderSettingsCollection ReportingProviders {
+      get {
+        return (ProviderSettingsCollection)base["reportingProviders"];
+      }
+    }
+
+
   } //Class
 } //Namespace
