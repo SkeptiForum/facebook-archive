@@ -15,105 +15,22 @@ using SkeptiForum.Archive.Reporting;
 using SkeptiForum.Archive.Reporting.Providers;
 
 namespace SkeptiForum.Archive.Controllers {
+
   public class ActivityLogController : ODataController {
+
     private ReportingContext db = new ReportingContext();
 
-    // GET: odata/ActivityLogController
+    // GET: odata/ActivityLog
     [EnableQuery]
-    public IQueryable<Activity> GetActivity() {
+    [Queryable(PageSize = 500)]
+    public IQueryable<Activity> GetActivityLog() {
       return db.ActivityLog;
     }
 
-    // GET: odata/ActivityLogController(5)
+    // GET: odata/ActivityLog(5)
     [EnableQuery]
     public SingleResult<Activity> GetActivity([FromODataUri] long key) {
-      return SingleResult.Create(db.ActivityLog.Where(Activity => Activity.Id == key));
-    }
-
-    // PUT: odata/ActivityLogController(5)
-    public async Task<IHttpActionResult> Put([FromODataUri] long key, Delta<Activity> patch) {
-      Validate(patch.GetEntity());
-
-      if (!ModelState.IsValid) {
-        return BadRequest(ModelState);
-      }
-
-      Activity Activity = await db.ActivityLog.FindAsync(key);
-      if (Activity == null) {
-        return NotFound();
-      }
-
-      patch.Put(Activity);
-
-      try {
-        await db.SaveChangesAsync();
-      }
-      catch (DbUpdateConcurrencyException) {
-        if (!ActivityExists(key)) {
-          return NotFound();
-        }
-        else {
-          throw;
-        }
-      }
-
-      return Updated(Activity);
-    }
-
-    // POST: odata/ActivityLogController
-    public async Task<IHttpActionResult> Post(Activity Activity) {
-      if (!ModelState.IsValid) {
-        return BadRequest(ModelState);
-      }
-
-      db.ActivityLog.Add(Activity);
-      await db.SaveChangesAsync();
-
-      return Created(Activity);
-    }
-
-    // PATCH: odata/ActivityLogController(5)
-    [AcceptVerbs("PATCH", "MERGE")]
-    public async Task<IHttpActionResult> Patch([FromODataUri] long key, Delta<Activity> patch) {
-      Validate(patch.GetEntity());
-
-      if (!ModelState.IsValid) {
-        return BadRequest(ModelState);
-      }
-
-      Activity Activity = await db.ActivityLog.FindAsync(key);
-      if (Activity == null) {
-        return NotFound();
-      }
-
-      patch.Patch(Activity);
-
-      try {
-        await db.SaveChangesAsync();
-      }
-      catch (DbUpdateConcurrencyException) {
-        if (!ActivityExists(key)) {
-          return NotFound();
-        }
-        else {
-          throw;
-        }
-      }
-
-      return Updated(Activity);
-    }
-
-    // DELETE: odata/ActivityLogController(5)
-    public async Task<IHttpActionResult> Delete([FromODataUri] long key) {
-      Activity Activity = await db.ActivityLog.FindAsync(key);
-      if (Activity == null) {
-        return NotFound();
-      }
-
-      db.ActivityLog.Remove(Activity);
-      await db.SaveChangesAsync();
-
-      return StatusCode(HttpStatusCode.NoContent);
+      return SingleResult.Create(db.ActivityLog.Where(activity => activity.Id == key));
     }
 
     protected override void Dispose(bool disposing) {
@@ -126,5 +43,6 @@ namespace SkeptiForum.Archive.Controllers {
     private bool ActivityExists(long key) {
       return db.ActivityLog.Count(e => e.Id == key) > 0;
     }
-  }
-}
+
+  } //Class
+} //Namespace
