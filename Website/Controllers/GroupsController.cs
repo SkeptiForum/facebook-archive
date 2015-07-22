@@ -44,16 +44,16 @@ namespace SkeptiForum.Archive.Controllers {
       return await ArchiveManager.StorageProvider.GetPostAsync(groupId, postId);
     }
 
-    [Route("{groupKey:alpha}/Update")]
+    [Route("{groupKey:alpha}/Archive")]
     [HttpPost]
-    public async Task<FacebookGroup> UpdateGroupAsync(string groupKey) {
+    public async Task<FacebookGroup> ArchiveGroupAsync(string groupKey) {
       var group = ArchiveManager.Groups[groupKey];
-      return await UpdateGroupAsync(group.Id);
+      return await ArchiveGroupAsync(group.Id);
     }
 
-    [Route("{groupId:long}/Update")]
+    [Route("{groupId:long}/Archive")]
     [HttpPost]
-    public async Task<FacebookGroup> UpdateGroupAsync(long groupId) {
+    public async Task<FacebookGroup> ArchiveGroupAsync(long groupId) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate the access token
@@ -84,6 +84,51 @@ namespace SkeptiForum.Archive.Controllers {
       | Update group metadata 
       \-----------------------------------------------------------------------------------------------------------------------*/
       group.LastArchived = DateTime.Now;
+      await ArchiveManager.StorageProvider.SetGroupsAsync();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return latest state for group
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return group;
+
+    }
+
+    [Route("{groupKey:alpha}/Index")]
+    [HttpPost]
+    public async Task<FacebookGroup> IndexGroupAsync(string groupKey) {
+      var group = ArchiveManager.Groups[groupKey];
+      return await IndexGroupAsync(group.Id);
+    }
+
+    [Route("{groupId:long}/Index")]
+    [HttpPost]
+    public async Task<FacebookGroup> IndexGroupAsync(long groupId) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate the access token
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(ArchiveManager.Configuration.Api.Token)) {
+        throw new ArgumentException(
+          "This method assumes the presence of a cookie with the key 'fbak', representing the long-lived Facebook access token."
+          + "This cookie is set by the /Api/Authorize/ endpoint, which accepts temporary access token returned by the Facebook"
+          + "JavaScript SDK."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Retrieve group reference
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      FacebookGroup group = ArchiveManager.Groups[groupId];
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Index group
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      await group.IndexPostsAsync(group.LastIndexed);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Update group metadata 
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      group.LastIndexed = group.LastArchived;
       await ArchiveManager.StorageProvider.SetGroupsAsync();
 
       /*------------------------------------------------------------------------------------------------------------------------

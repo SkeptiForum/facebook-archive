@@ -12,6 +12,7 @@ using System.Web.Http.ModelBinding;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Routing;
 using SkeptiForum.Archive.Reporting;
+using SkeptiForum.Archive.Reporting.Providers;
 
 namespace SkeptiForum.Archive.Controllers {
   public class ActivityLogController : ODataController {
