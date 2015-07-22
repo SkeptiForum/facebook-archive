@@ -9,11 +9,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		README.md = README.md
+		Queries\Reporting.sql = Queries\Reporting.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive", "Archive\Archive.csproj", "{F3BE4089-6C48-4319-B258-92BE84620255}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting", "Reporting\Reporting.csproj", "{EBFC70C3-A62A-4D93-A8C9-81D8C39F7F37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkReportingProvider", "EntityFrameworkReportingProvider\EntityFrameworkReportingProvider.csproj", "{EBFC70C3-A62A-4D93-A8C9-81D8C39F7F37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
