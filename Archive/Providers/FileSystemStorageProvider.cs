@@ -35,6 +35,11 @@ namespace SkeptiForum.Archive.Providers {
 
     /*==========================================================================================================================
     | METHOD: GET GROUPS (ASYNCHRONOUS)
+    >---------------------------------------------------------------------------------------------------------------------------
+    | ### HACK JJC120715: The ArchiveManager.Groups property cannot call this method asynchronously, and thus calls it with    
+    | GetPostAsync(...).Result. This causes the process to hang. This only seems to happen when using ReadToEndAsync(); other
+    | asynchronous methods do not exhibit this behavior. To mitigate this, this is currently using the synchronous method, until
+    | a long-term fix can be identified.
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Retrieves a list of groups that the current application is configured to use.
@@ -49,7 +54,7 @@ namespace SkeptiForum.Archive.Providers {
         return new FacebookGroupCollection();
       }
       using (StreamReader reader = File.OpenText(groupConfigPath)) {
-        return JsonConvert.DeserializeObject<FacebookGroupCollection>(await reader.ReadToEndAsync());
+        return JsonConvert.DeserializeObject<FacebookGroupCollection>(reader.ReadToEnd());
       }
     }
 
@@ -101,12 +106,25 @@ namespace SkeptiForum.Archive.Providers {
     ///   posts associated with a group.
     /// </summary>
     /// <param name="groupId">The unique identifier for the group to query.</param>
-    public async override Task<IEnumerable<FileInfo>> GetPostsAsync(long groupId) {
+    /// <param name="since">The (optional) start date to pull records from.</param>
+    /// <param name="until">The (optional) end date to pull records up to.</param>
+    public async override Task<IEnumerable<FileInfo>> GetPostsAsync(long groupId, DateTime? since = null, DateTime? until = null) {
+
       var postPath = ArchiveManager.Configuration.StorageDirectory + "/" + groupId + "/";
       var postMappedPath = HttpContext.Current.Server.MapPath(postPath);
       var directory = new DirectoryInfo(postMappedPath);
-      if (!directory.Exists) return new List<FileInfo>();
-      return directory.EnumerateFiles("*.json");
+      var files = new List<FileInfo>();
+
+      if (!directory.Exists) return files;
+
+      foreach (FileInfo file in directory.GetFiles("*.json")) {
+        if (since != null && file.LastAccessTimeUtc < since) continue;
+        if (until != null && file.LastWriteTimeUtc > until) continue;
+        files.Add(file);
+      };
+
+      return files.AsEnumerable<FileInfo>();
+
     }
 
     /*==========================================================================================================================
@@ -125,7 +143,8 @@ namespace SkeptiForum.Archive.Providers {
       string json; // = File.ReadAllText(postMappedPath);
 
       using (StreamReader reader = File.OpenText(postMappedPath)) {
-        json = await reader.ReadToEndAsync();
+        //json = await reader.ReadToEndAsync();
+        json = reader.ReadToEnd();
       }
 
       return JObject.Parse(json);
@@ -161,7 +180,7 @@ namespace SkeptiForum.Archive.Providers {
         await sourceStream.WriteAsync(encodedText, 0, encodedText.Length);
       }
 
-      File.SetLastWriteTime(filePath, (DateTime)json.updated_time);
+      File.SetLastWriteTime(filePath, DateTime.Parse(json.updated_time?? json.created_time?? DateTime.Now.ToString()));
 
     }
 
