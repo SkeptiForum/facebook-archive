@@ -13,13 +13,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SkeptiForum.Archive</RootNamespace>
     <AssemblyName>Website</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,6 +30,17 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="SkeptiForum" Order="1">
+          <Destination Path="Data Source=10.0.0.1%3bInitial Catalog=SkeptiForum%3bIntegrated Security=True" />
+          <Object Type="DbFullSql">
+            <PreSource Path="Data Source=%28LocalDb%29\MSSQLLocalDB%3bInitial Catalog=Reporting%3bIntegrated Security=True%3bConnect Timeout=15%3bEncrypt=False%3bTrustServerCertificate=False%3bApplicationIntent=ReadWrite%3bMultiSubnetFailover=False" ScriptSchema="True" ScriptData="True" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Debug\AutoScripts\SkeptiForum_SchemaAndData.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -64,6 +76,7 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -79,8 +92,6 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
@@ -94,13 +105,13 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Web.Razor">
@@ -126,8 +137,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Admin\Download.html.js" />
-    <Content Include="Admin\Download.html" />
+    <Content Include="Shared\Scripts\Admin\AdminController.js" />
     <Content Include="Global.asax" />
     <Content Include="Archives\Groups.json" />
     <Content Include="Scripts\angular-animate.js" />
@@ -171,6 +181,8 @@
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\angular-moment.min.js.map" />
     <Content Include="Archive.config" />
+    <None Include="Properties\PublishProfiles\Database.pubxml" />
+    <None Include="Properties\PublishProfiles\Ignia.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\i18n\angular-locale_aa-dj.js" />
     <Content Include="Scripts\i18n\angular-locale_aa-er.js" />
@@ -961,14 +973,13 @@
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
     <Content Include="Views\_Layout.cshtml" />
-    <Content Include="Views\Admin\Download.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Threads\Index.cshtml" />
     <Content Include="Views\Threads\Details.cshtml" />
     <Content Include="Scripts\version.json" />
     <Content Include="Views\Sitemap\Index.cshtml" />
     <Content Include="Views\Sitemap\Group.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Admin\Reporting.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -985,9 +996,9 @@
       <Project>{f3be4089-6c48-4319-b258-92be84620255}</Project>
       <Name>Archive</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Reporting\Reporting.csproj">
+    <ProjectReference Include="..\EntityFrameworkReportingProvider\EntityFrameworkReportingProvider.csproj">
       <Project>{ebfc70c3-a62a-4d93-a8c9-81d8c39f7f37}</Project>
-      <Name>Reporting</Name>
+      <Name>EntityFrameworkReportingProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

@@ -1,0 +1,70 @@
+﻿@{
+  Layout = "~/Views/_Layout.cshtml";
+}
+
+<base href="/Groups">
+
+<main ng-app="admin" ng-controller="AdminController as vm" ng-show="vm.siteGroups">
+
+  <article>
+
+    <h1>Skepti-Forum: Archive Posts</h1>
+
+    <div id="status"></div>
+
+    <script>
+    </script>
+
+    <table class="list">
+      <thead>
+        <tr>
+          <td>Name</td>
+          <td>Public?</td>
+          <td>Post Count</td>
+          <td>Last Archived</td>
+          <td>Last Indexed</td>
+        </tr>
+      </thead>
+      <tr ng-repeat="group in vm.siteGroups" ng-class="{inactive: !group.isMemberOf}">
+        <td><a ng-href="https://www.facebook.com/groups/{{group.Id}}"><span ng-bind="group.Name" /></a></td>
+        <td ng-bind="group.IsPublic"></td>
+        <td ng-bind="group.PostCount | number:0"></td>
+        <td ng-class="{old: group.isArchiveStale }">
+          <button ng-style="{'visibility': group.isMemberOf? 'visible':'hidden' }" ng-class="vm.getState(group, 'Archive')" ng-disabled="group.ArchiveProcessing" ng-click="vm.archiveGroup(group)">Archive</button>
+          <span am-time-ago="group.LastArchived" />
+        </td>
+        <td ng-class="{old: group.isIndexStale }">
+          <button ng-style="{'visibility': group.isMemberOf? 'visible':'hidden' }" ng-class="vm.getState(group, 'Index')" ng-disabled="group.IndexProcessing" ng-click="vm.indexGroup(group)">Index</button>
+          <span am-time-ago="group.LastIndexed" />
+        </td>
+      </tr>
+    </table>
+
+    <form method="post">
+      <br />
+      <button id="btnLogin" ng-show="!vm.isAuthenticated" ng-click="vm.login()">Login</button>
+      <button id="btnLogout" ng-show="vm.isAuthenticated" ng-click="vm.logout()">Logout</button>
+      <button id="btnRetrieve" ng-show="false && vm.isAuthenticated">Download All Posts</button>
+      <fb:login-button auto_logout_link="true" scope="user_groups" onlogin="checkLoginState();"></fb:login-button>
+    </form>
+
+  </article>
+
+</main>
+
+<ul>
+  @foreach (var key in ViewData) {
+    <li>@key.Key: @key.Value</li>
+  }
+</ul>
+
+@section Scripts {
+  <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+  <script src="~/Scripts/angular.min.js"></script>
+  <script src="~/Scripts/angular-cookies.min.js"></script>
+  <script src="~/Scripts/moment.min.js"></script>
+  <script src="~/Scripts/angular-moment.min.js"></script>
+  <script src="~/Shared/Scripts/Admin/admin.js"></script>
+  <script src="~/Shared/Scripts/Admin/AdminController.js"></script>
+  <script src="~/Shared/Scripts/Admin/ngFacebook.js"></script>
+}

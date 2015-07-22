@@ -8,21 +8,21 @@
 \=============================================================================================================================*/
   angular
     .module('admin')
-    .controller('DownloadController', DownloadController);
+    .controller('AdminController', AdminController);
 
-  DownloadController.$inject = ['$location', '$http', '$facebook', '$cookies', '$q'];
+  AdminController.$inject = ['$location', '$http', '$facebook', '$cookies', '$q'];
 
 /*==============================================================================================================================
 | CONTROLLER: DOWNLOADCONTROLLER
 \-----------------------------------------------------------------------------------------------------------------------------*/
 /** @ngdoc controller
-  * @name app:DownloadController
+  * @name app:AdminController
   * @description
   * Provides a list of groups available for management on this site, including metadata for when they were last downloaded. 
   * Deduplicates this list against data the current user is authorized for, and provides options for downloading posts for 
   * any groups the user has permissions for.
   */
-  function DownloadController($location, $http, $facebook, $cookies, $q) {
+  function AdminController($location, $http, $facebook, $cookies, $q) {
     /* jshint validthis:true */
 
   /*============================================================================================================================
@@ -37,13 +37,21 @@
         processLogin(response);
       });
     }
-    vm.updateGroup = updateGroup;
+    vm.archiveGroup = archiveGroup;
+    vm.indexGroup = indexGroup;
     vm.logout = function () {
       $cookies.remove('fbat');
       $facebook.logout().then(function (response) {
         vm.isAuthenticated = false;
       });
     };
+    vm.getState = function(group, method) {
+      return {
+        processing: group[method + "Processing"], 
+        updated: group[method + "Updating"], 
+        error: group[method + "Error"]
+      }
+    }
 
     activate();
 
@@ -51,7 +59,7 @@
   | METHOD: ACTIVATE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /** @ngdoc method
-    * @name  app:DownloadController#activate
+    * @name  app:AdminController#activate
     * @kind  function
     * @description Prepares the thread detail controller with necessary dependencies. This includes primarily the archived JSON
     * file, which is loaded based on routing data in the URL.
@@ -76,7 +84,7 @@
   | METHOD: PROCESS LOGIN
   \---------------------------------------------------------------------------------------------------------------------------*/
   /** @ngdoc method
-    * @name  app:DownloadController#processLogin
+    * @name  app:AdminController#processLogin
     * @kind  function
     * @description Responds to a user's successful authentication by loading subsequent data that the user depends on, such as 
     * user groups.
@@ -119,7 +127,7 @@
   | METHOD: GET USER GROUPS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /** @ngdoc method
-    * @name  app:DownloadController#getUserGroups
+    * @name  app:AdminController#getUserGroups
     * @kind  function
     * @description Requests the user's groups from the Facebook Graph API.
     */
@@ -135,7 +143,7 @@
   | METHOD: COLLATE DATA
   \---------------------------------------------------------------------------------------------------------------------------*/
   /** @ngdoc method
-    * @name  app:DownloadController#collateData
+    * @name  app:AdminController#collateData
     * @kind  function
     * @description Collates data from the Facebook Graph API's /groups edge and the local Web API's /groups endpoint into a 
     * single list that includes both data from the server as well as the user's own permissions. Additionally, set a new 'isOld'
@@ -149,32 +157,54 @@
             siteGroup.isMemberOf = true;
           }
         });
-        siteGroup.isOld = moment(siteGroup.LastArchived).diff(Date.now(), 'days') < -14;
+        siteGroup.isArchiveStale = moment(siteGroup.LastArchived).diff(Date.now(), 'days') < -14;
+        siteGroup.isIndexStale = moment(siteGroup.LastIndexed).diff(Date.now(), 'days') < -14;
       });
     }
 
   /*============================================================================================================================
-  | METHOD: UPDATE GROUP
+  | METHOD: ARCHIVE GROUP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /** @ngdoc method
-    * @name  app:DownloadController#updateGroup
+    * @name  app:AdminController#archiveGroup
     * @kind  function
     * @description Requests that the server archive newer posts and comments from Facebook.
     */
-    function updateGroup(group) {
-      group.Processing = true;
-      $http.post('/Api/Groups/' + group.Id + '/Update').
+    function archiveGroup(group) {
+      group.ArchiveProcessing = true;
+      $http.post('/Api/Groups/' + group.Id + '/Archive').
       success(function (data, statusText) {
-        delete group.Processing;
+        delete group.ArchiveProcessing;
         group.LastArchived = data.LastArchived;
         group.PostCount = data.PostCount;
-        group.Updated = true;
-        group.isOld = false;
+        group.ArchiveUpdated = true;
+        group.isIndexOld = false;
       }).
       error(function (data, statusText) {
-        group.Error = true;
+        group.ArchiveError = true;
       });
+    }
 
+    /*============================================================================================================================
+    | METHOD: INDEX GROUP
+    \---------------------------------------------------------------------------------------------------------------------------*/
+    /** @ngdoc method
+      * @name  app:AdminController#indexGroup
+      * @kind  function
+      * @description Requests that the server index newer posts and comments from Facebook.
+      */
+    function indexGroup(group) {
+      group.IndexProcessing = true;
+      $http.post('/Api/Groups/' + group.Id + '/Index').
+      success(function (data, statusText) {
+        delete group.IndexProcessing;
+        group.LastIndexed = data.LastIndexed;
+        group.IndexUpdated = true;
+        group.isIndexOld = false;
+      }).
+      error(function (data, statusText) {
+        group.IndexError = true;
+      });
     }
 
   }
