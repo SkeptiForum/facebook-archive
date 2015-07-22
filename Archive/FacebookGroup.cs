@@ -34,6 +34,7 @@ namespace SkeptiForum.Archive {
     private int         _postCount = -1;
     private bool        _isPublic = false;
     private DateTime    _lastArchived = DateTime.MinValue;
+    private DateTime    _lastIndexed = DateTime.MinValue;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -171,6 +172,21 @@ namespace SkeptiForum.Archive {
     }
 
     /*==========================================================================================================================
+    | PROPERTY: LAST INDEXED
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the time that the group was previously indexed. 
+    /// </summary>
+    public DateTime LastIndexed {
+      get {
+        return _lastIndexed;
+      }
+      set {
+        _lastIndexed = value;
+      }
+    }
+
+    /*==========================================================================================================================
     | METHOD: GET POSTS (ASYNCHRONOUS)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -179,10 +195,26 @@ namespace SkeptiForum.Archive {
     /// <remarks>
     ///   This method will continue requesting posts from the API via paging until there are no more posts available.
     /// </remarks>
+    /// <param name="since">The (optional) start date to pull records from.</param>
+    /// <param name="until">The (optional) end date to pull records up to.</param>
     /// <returns>A collection of dynamic objects, each representing the JSON response from the Facebook Graph API.</returns>
     public async Task<Collection<dynamic>> GetPostsAsync(DateTime? since = null, DateTime? until = null) {
       return await ArchiveManager.DataProvider.GetPostsAsync(Id, since, until);
     }
+
+    /*==========================================================================================================================
+    | METHOD: INDEX GROUP (ASYNCHRONOUS)
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Retrieves all posts from the configured <see cref="ArchiveManager.StorageProvider"/> and ensures that each post and 
+    ///   its comments are added to the reporting provider.
+    /// </summary>
+    /// <param name="since">The (optional) start date to index records from.</param>
+    /// <param name="until">The (optional) end date to index records up to.</param>
+    public async Task IndexPostsAsync(DateTime? since = null, DateTime? until = null) {
+      await ArchiveManager.ReportingProvider.IndexPostsAsync(Id, since, until);
+    }
+
 
   } //Class
 } //Namespace
