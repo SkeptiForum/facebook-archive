@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Web.Mvc;
 using SkeptiForum.Archive;
+using SkeptiForum.Archive.Models;
 using System.Threading.Tasks;
 
 namespace SkeptiForum.Archive.Controllers {
@@ -82,9 +83,17 @@ namespace SkeptiForum.Archive.Controllers {
       Response.ContentType = "application/xml";
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Assemble view model
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var viewModel = new SitemapGroupViewModel(
+        ArchiveManager.Groups[groupId],
+        await ArchiveManager.StorageProvider.GetPostsAsync(groupId)
+      );
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Return data to view
       \-----------------------------------------------------------------------------------------------------------------------*/
-      return View(await ArchiveManager.StorageProvider.GetPostsAsync(groupId));
+      return View(viewModel);
 
     }
 

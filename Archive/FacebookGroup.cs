@@ -35,6 +35,7 @@ namespace SkeptiForum.Archive {
     private bool        _isPublic = false;
     private DateTime    _lastArchived = DateTime.MinValue;
     private DateTime    _lastIndexed = DateTime.MinValue;
+    private DateTime    _lastModifiedFloor = DateTime.MinValue;
 
     /*==========================================================================================================================
     | CONSTRUCTOR
@@ -183,6 +184,26 @@ namespace SkeptiForum.Archive {
       }
       set {
         _lastIndexed = value;
+      }
+    }
+
+    /*==========================================================================================================================
+    | PROPERTY: LAST MODIFIED FLOOR
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Gets or sets the minimum time that should be used for the last modified date in the sitemap. 
+    /// </summary>
+    /// <remarks>
+    ///   By default, all post records have a last modified date equivelent to the last activity on the post. This date is 
+    ///   relayed to search engines via the sitemap. When structural changes occur outside of the content, however, it may be 
+    ///   necessary to report a different last modified date to search engines that is independent of the content.
+    /// </remarks>
+    public DateTime LastModifiedFloor {
+      get {
+        return _lastModifiedFloor;
+      }
+      set {
+        _lastModifiedFloor = value;
       }
     }
 
